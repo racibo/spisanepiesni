@@ -107,8 +107,7 @@
         .icon-button,
         .small-button,
         .tag-button,
-        .song-link,
-        .favorite-button {
+        .song-link {
             border: 1px solid var(--border);
             background: var(--panel-2);
             color: var(--text);
@@ -127,8 +126,7 @@
         .icon-button:hover,
         .small-button:hover,
         .tag-button:hover,
-        .song-link:hover,
-        .favorite-button:hover {
+        .song-link:hover {
             background: var(--hover);
             border-color: var(--accent);
         }
@@ -189,18 +187,6 @@
             grid-template-columns: 30px minmax(0, 1fr);
             gap: 5px;
             align-items: stretch;
-        }
-
-        .favorite-button {
-            width: 30px;
-            min-height: 30px;
-            padding: 0;
-            color: var(--muted);
-        }
-
-        .favorite-button.active {
-            color: var(--accent-2);
-            border-color: color-mix(in srgb, var(--accent-2), var(--border));
         }
 
         .song-link {
@@ -457,11 +443,6 @@
             </div>
 
             <section class="side-section">
-                <div class="side-section-title">Ulubione</div>
-                <div id="favorites-list" class="quick-list"></div>
-            </section>
-
-            <section class="side-section">
                 <div class="side-section-title">Najnowsze utwory</div>
                 <div id="latest-list" class="quick-list"></div>
             </section>
@@ -488,7 +469,6 @@
                     <div class="song-head">
                         <div>
                             <div class="title-row">
-                                <button id="favorite-current" class="favorite-button" type="button" title="Dodaj do ulubionych" aria-label="Dodaj do ulubionych">☆</button>
                                 <h1 id="song-title">Tytuł piosenki</h1>
                             </div>
                             <div id="song-tags" class="tags"></div>
@@ -531,14 +511,14 @@
     </div>
 
     <script>
-        const storageKeys = {
-            lastSong: "spiewnik:lastSong",
-            transposition: "spiewnik:transposition",
-            sidebarHidden: "spiewnik:sidebarHidden",
-            favorites: "spiewnik:favorites",
-            theme: "spiewnik:theme",
-            scrollSpeed: "spiewnik:scrollSpeed"
-        };
+        [
+            "spiewnik:lastSong",
+            "spiewnik:transposition",
+            "spiewnik:sidebarHidden",
+            "spiewnik:favorites",
+            "spiewnik:theme",
+            "spiewnik:scrollSpeed"
+        ].forEach(key => localStorage.removeItem(key));
 
         const sharpNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "Bb", "H"];
         const flatNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "H"];
@@ -555,10 +535,9 @@
 
         let allSongs = [];
         let currentSong = null;
-        let currentTransposition = readNumber(storageKeys.transposition, 0);
+        let currentTransposition = 0;
         let activeTag = "";
-        let favorites = readJson(storageKeys.favorites, []);
-        let scrollSpeed = readNumber(storageKeys.scrollSpeed, 0);
+        let scrollSpeed = 0;
         let scrollFrame = null;
         let lastScrollTime = 0;
 
@@ -568,7 +547,6 @@
         const searchInput = document.getElementById("search");
         const songList = document.getElementById("song-list");
         const latestList = document.getElementById("latest-list");
-        const favoritesList = document.getElementById("favorites-list");
         const songScreen = document.getElementById("song-screen");
         const welcomeScreen = document.getElementById("welcome-screen");
         const songTitle = document.getElementById("song-title");
@@ -576,7 +554,6 @@
         const songBody = document.getElementById("song-body");
         const transpositionVal = document.getElementById("transposition-val");
         const targetChord = document.getElementById("target-chord");
-        const favoriteCurrent = document.getElementById("favorite-current");
         const themeToggle = document.getElementById("theme-toggle");
         const scrollSpeedLabel = document.getElementById("scroll-speed");
 
@@ -585,12 +562,9 @@
         loadSongs();
 
         function initSettings() {
-            const hidden = localStorage.getItem(storageKeys.sidebarHidden);
             const defaultHidden = window.matchMedia("(max-width: 780px)").matches;
-            body.classList.toggle("sidebar-hidden", hidden === null ? defaultHidden : hidden === "true");
+            body.classList.toggle("sidebar-hidden", defaultHidden);
 
-            const theme = localStorage.getItem(storageKeys.theme);
-            body.classList.toggle("light", theme === "light");
             updateThemeButton();
             updateScrollSpeed();
         }
@@ -606,9 +580,6 @@
             document.getElementById("guitar-mode").addEventListener("click", () => changeTransposition(-5));
             document.getElementById("random-song").addEventListener("click", showRandomSong);
             document.getElementById("theme-toggle").addEventListener("click", toggleTheme);
-            document.getElementById("favorite-current").addEventListener("click", () => {
-                if (currentSong) toggleFavorite(currentSong.title);
-            });
             document.getElementById("scroll-slower").addEventListener("click", () => setScrollSpeed(scrollSpeed - 1));
             document.getElementById("scroll-faster").addEventListener("click", () => setScrollSpeed(scrollSpeed + 1));
             document.getElementById("scroll-stop").addEventListener("click", () => setScrollSpeed(0));
@@ -651,7 +622,6 @@
 
         function renderAllLists() {
             renderLatestList();
-            renderFavoritesList();
             renderSongList(getFilteredSongs());
         }
 
@@ -672,15 +642,6 @@
             latest.forEach(song => latestList.appendChild(createSongRow(song, true)));
         }
 
-        function renderFavoritesList() {
-            const favoriteSongs = favorites
-                .map(title => allSongs.find(song => song.title === title))
-                .filter(Boolean);
-
-            favoritesList.innerHTML = favoriteSongs.length ? "" : `<div class="empty">Brak ulubionych</div>`;
-            favoriteSongs.forEach(song => favoritesList.appendChild(createSongRow(song, true)));
-        }
-
         function renderSongList(songs) {
             songList.innerHTML = "";
             if (!songs.length) {
@@ -691,28 +652,12 @@
         }
 
         function createSongRow(song, compact) {
-            const row = document.createElement("div");
-            row.className = "song-row";
-
-            const star = document.createElement("button");
-            star.type = "button";
-            star.className = "favorite-button" + (isFavorite(song.title) ? " active" : "");
-            star.textContent = isFavorite(song.title) ? "★" : "☆";
-            star.title = isFavorite(song.title) ? "Usuń z ulubionych" : "Dodaj do ulubionych";
-            star.addEventListener("click", event => {
-                event.preventDefault();
-                toggleFavorite(song.title);
-            });
-
             const link = document.createElement("a");
             link.href = `#/${encodeURIComponent(song.title.trim())}`;
             link.className = "song-link" + (currentSong && currentSong.title === song.title ? " active" : "");
             link.textContent = song.title;
             if (compact) link.style.fontSize = "0.82rem";
-
-            row.appendChild(star);
-            row.appendChild(link);
-            return row;
+            return link;
         }
 
         function displaySong(songTitleToFind) {
@@ -720,7 +665,6 @@
             if (!song) return false;
 
             currentSong = song;
-            localStorage.setItem(storageKeys.lastSong, song.title);
 
             welcomeScreen.classList.add("hidden");
             songScreen.classList.remove("hidden");
@@ -728,7 +672,6 @@
             renderTags(song);
             renderSongBody(song);
             updateTransposition();
-            updateFavoriteCurrent();
             renderAllLists();
             return true;
         }
@@ -863,21 +806,18 @@
             if (!first || !target) return;
 
             currentTransposition = normalizeSteps(target.value - first.value);
-            saveTransposition();
             renderSongBody(currentSong);
             updateTransposition();
         }
 
         function changeTransposition(steps) {
             currentTransposition = normalizeSteps(currentTransposition + steps);
-            saveTransposition();
             if (currentSong) renderSongBody(currentSong);
             updateTransposition();
         }
 
         function resetTransposition() {
             currentTransposition = 0;
-            saveTransposition();
             if (currentSong) renderSongBody(currentSong);
             updateTransposition();
         }
@@ -887,10 +827,6 @@
             if (normalized > 6) normalized -= 12;
             if (normalized < -6) normalized += 12;
             return normalized;
-        }
-
-        function saveTransposition() {
-            localStorage.setItem(storageKeys.transposition, String(currentTransposition));
         }
 
         function updateTransposition() {
@@ -903,7 +839,6 @@
 
         function setSidebarHidden(hidden) {
             body.classList.toggle("sidebar-hidden", hidden);
-            localStorage.setItem(storageKeys.sidebarHidden, String(hidden));
         }
 
         function showRandomSong(updateHash = true) {
@@ -916,30 +851,8 @@
             }
         }
 
-        function toggleFavorite(title) {
-            favorites = isFavorite(title)
-                ? favorites.filter(item => item !== title)
-                : [...favorites, title];
-            localStorage.setItem(storageKeys.favorites, JSON.stringify(favorites));
-            updateFavoriteCurrent();
-            renderAllLists();
-        }
-
-        function isFavorite(title) {
-            return favorites.includes(title);
-        }
-
-        function updateFavoriteCurrent() {
-            if (!currentSong) return;
-            const active = isFavorite(currentSong.title);
-            favoriteCurrent.classList.toggle("active", active);
-            favoriteCurrent.textContent = active ? "★" : "☆";
-            favoriteCurrent.title = active ? "Usuń z ulubionych" : "Dodaj do ulubionych";
-        }
-
         function toggleTheme() {
             body.classList.toggle("light");
-            localStorage.setItem(storageKeys.theme, body.classList.contains("light") ? "light" : "dark");
             updateThemeButton();
         }
 
@@ -949,7 +862,6 @@
 
         function setScrollSpeed(value) {
             scrollSpeed = Math.max(0, Math.min(9, value));
-            localStorage.setItem(storageKeys.scrollSpeed, String(scrollSpeed));
             updateScrollSpeed();
         }
 
@@ -973,20 +885,6 @@
                 scrollFrame = requestAnimationFrame(autoScroll);
             } else {
                 scrollFrame = null;
-            }
-        }
-
-        function readNumber(key, fallback) {
-            const value = Number(localStorage.getItem(key));
-            return Number.isFinite(value) ? value : fallback;
-        }
-
-        function readJson(key, fallback) {
-            try {
-                const value = JSON.parse(localStorage.getItem(key));
-                return Array.isArray(value) ? value : fallback;
-            } catch {
-                return fallback;
             }
         }
 
