@@ -59,7 +59,7 @@
 
         .app {
             display: grid;
-            grid-template-columns: 290px minmax(0, 1fr);
+            grid-template-columns: 320px minmax(0, 1fr);
             height: 100%;
             min-width: 0;
         }
@@ -176,27 +176,20 @@
         .song-list {
             flex: 1;
             overflow-y: auto;
-            padding: 8px;
+            padding: 8px 9px 12px;
             display: grid;
             align-content: start;
-            gap: 4px;
-        }
-
-        .song-row {
-            display: grid;
-            grid-template-columns: 30px minmax(0, 1fr);
             gap: 5px;
-            align-items: stretch;
         }
 
         .song-link {
             display: block;
             min-width: 0;
-            padding: 6px 8px;
+            padding: 8px 9px;
             color: var(--text);
             text-decoration: none;
-            font-size: 0.9rem;
-            line-height: 1.18;
+            font-size: 0.98rem;
+            line-height: 1.25;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -255,9 +248,9 @@
         .song-head {
             display: grid;
             grid-template-columns: minmax(0, 1fr) auto;
-            gap: 12px;
+            gap: 10px;
             align-items: start;
-            padding-bottom: 9px;
+            padding-bottom: 7px;
             border-bottom: 1px solid var(--border);
         }
 
@@ -280,12 +273,12 @@
             display: flex;
             gap: 5px;
             flex-wrap: wrap;
-            margin-top: 7px;
+            margin-top: 6px;
         }
 
         .tag-button {
-            padding: 3px 7px;
-            font-size: 0.78rem;
+            padding: 2px 6px;
+            font-size: 0.76rem;
             color: var(--muted);
         }
 
@@ -296,15 +289,15 @@
 
         .controls {
             display: grid;
-            gap: 7px;
+            gap: 5px;
             justify-items: end;
-            max-width: 520px;
+            max-width: 390px;
         }
 
         .small-button {
-            min-height: 32px;
-            padding: 5px 9px;
-            font-size: 0.86rem;
+            min-height: 26px;
+            padding: 3px 7px;
+            font-size: 0.78rem;
             white-space: nowrap;
         }
 
@@ -314,8 +307,8 @@
         }
 
         .meter {
-            min-width: 42px;
-            padding: 5px 8px;
+            min-width: 34px;
+            padding: 3px 6px;
             border-radius: 7px;
             background: var(--bg);
             border: 1px solid var(--border);
@@ -327,28 +320,34 @@
 
         .target-control {
             display: grid;
-            grid-template-columns: auto 70px auto;
-            gap: 6px;
+            grid-template-columns: auto 54px auto;
+            gap: 5px;
             align-items: center;
             color: var(--muted);
-            font-size: 0.86rem;
+            font-size: 0.78rem;
         }
 
         .target-input {
-            padding: 5px 7px;
+            padding: 3px 6px;
             text-align: center;
             text-transform: none;
         }
 
+        .scroll-control {
+            color: var(--muted);
+            font-size: 0.78rem;
+        }
+
         .song-body {
-            margin-top: 9px;
-            font-size: clamp(0.9rem, 1.4vw, 1rem);
-            line-height: 1.16;
+            margin-top: 8px;
+            font-size: clamp(0.95rem, 1.4vw, 1.04rem);
+            line-height: 1.18;
         }
 
         .song-line {
             display: flex;
-            gap: 8px;
+            flex-wrap: wrap;
+            gap: 7px;
             align-items: baseline;
             padding: 1px 0;
             border-bottom: 1px solid color-mix(in srgb, var(--border) 45%, transparent);
@@ -364,17 +363,24 @@
             min-width: 0;
             color: var(--accent);
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            font-size: 0.84em;
+            font-size: 0.82em;
             font-weight: 800;
             line-height: 1.12;
             overflow-wrap: anywhere;
         }
 
         .lyric {
+            flex: 0 1 auto;
             min-width: 0;
             color: var(--text);
             overflow-wrap: anywhere;
             white-space: pre-wrap;
+        }
+
+        .readonly-meta {
+            color: var(--muted);
+            font-size: 0.78rem;
+            margin-top: 5px;
         }
 
         .empty {
@@ -439,7 +445,7 @@
             </div>
 
             <div class="search-wrap">
-                <input type="search" id="search" placeholder="Szukaj tytułu lub tagu...">
+                <input type="search" id="search" placeholder="Szukaj tytułu, tekstu lub tagu...">
             </div>
 
             <section class="side-section">
@@ -459,7 +465,7 @@
                     <span class="brand">Śpiewnik</span>
                 </div>
                 <div class="topbar-right">
-                    <button id="theme-toggle" class="small-button" type="button">Tryb dzienny</button>
+                    <button id="theme-toggle" class="small-button" type="button">Dzień</button>
                     <button id="random-song" class="small-button" type="button">Losuj</button>
                 </div>
             </header>
@@ -472,6 +478,7 @@
                                 <h1 id="song-title">Tytuł piosenki</h1>
                             </div>
                             <div id="song-tags" class="tags"></div>
+                            <div id="song-meta" class="readonly-meta"></div>
                         </div>
 
                         <div class="controls">
@@ -483,20 +490,21 @@
                             </div>
 
                             <div class="target-control">
-                                <span>Docelowy pierwszy akord:</span>
+                                <span>Do akordu:</span>
                                 <input id="target-chord" class="target-input" value="C" aria-label="Docelowy pierwszy akord">
                                 <button id="apply-target" class="small-button primary" type="button">Zastosuj</button>
                             </div>
 
                             <div class="button-row">
-                                <button id="ukulele-mode" class="small-button" type="button">🎸→🪕 Ukulele</button>
-                                <button id="guitar-mode" class="small-button" type="button">🪕→🎸 Gitara</button>
+                                <button id="ukulele-mode" class="small-button" type="button">Ukulele +5</button>
+                                <button id="guitar-mode" class="small-button" type="button">Gitara -5</button>
                             </div>
 
-                            <div class="button-row" aria-label="Autoscroll">
-                                <button id="scroll-slower" class="small-button" type="button">↑</button>
+                            <div class="button-row scroll-control" aria-label="Przewijanie">
+                                <span>Scroll:</span>
+                                <button id="scroll-slower" class="small-button" type="button">wolniej</button>
                                 <span id="scroll-speed" class="meter">0</span>
-                                <button id="scroll-faster" class="small-button" type="button">↓</button>
+                                <button id="scroll-faster" class="small-button" type="button">szybciej</button>
                                 <button id="scroll-stop" class="small-button" type="button">Stop</button>
                             </div>
                         </div>
@@ -551,6 +559,7 @@
         const welcomeScreen = document.getElementById("welcome-screen");
         const songTitle = document.getElementById("song-title");
         const songTags = document.getElementById("song-tags");
+        const songMeta = document.getElementById("song-meta");
         const songBody = document.getElementById("song-body");
         const transpositionVal = document.getElementById("transposition-val");
         const targetChord = document.getElementById("target-chord");
@@ -626,14 +635,28 @@
         }
 
         function getFilteredSongs() {
-            const query = normalize(searchInput.value);
+            const query = normalizeSearch(searchInput.value);
+            const queryWords = query.split(/\s+/).filter(Boolean);
             return allSongs.filter(song => {
                 const tags = Array.isArray(song.tags) ? song.tags : [];
-                const titleMatch = normalize(song.title).includes(query);
-                const tagSearchMatch = tags.some(tag => normalize(tag).includes(query));
-                const activeTagMatch = !activeTag || tags.some(tag => normalize(tag) === normalize(activeTag));
-                return activeTagMatch && (!query || titleMatch || tagSearchMatch);
+                const activeTagMatch = !activeTag || tags.some(tag => normalizeSearch(tag) === normalizeSearch(activeTag));
+                if (!activeTagMatch) return false;
+                if (!queryWords.length) return true;
+
+                const searchText = getSongSearchText(song);
+                return queryWords.every(word => searchText.includes(word));
             });
+        }
+
+        function getSongSearchText(song) {
+            const tags = Array.isArray(song.tags) ? song.tags.join(" ") : "";
+            const lyrics = Array.isArray(song.lyrics)
+                ? song.lyrics.map(line => {
+                    const chords = Array.isArray(line.chords) ? line.chords.join(" ") : "";
+                    return `${line.text || ""} ${chords}`;
+                }).join(" ")
+                : "";
+            return normalizeSearch(`${song.title || ""} ${tags} ${lyrics}`);
         }
 
         function renderLatestList() {
@@ -656,7 +679,7 @@
             link.href = `#/${encodeURIComponent(song.title.trim())}`;
             link.className = "song-link" + (currentSong && currentSong.title === song.title ? " active" : "");
             link.textContent = song.title;
-            if (compact) link.style.fontSize = "0.82rem";
+            if (compact) link.style.fontSize = "0.9rem";
             return link;
         }
 
@@ -670,6 +693,7 @@
             songScreen.classList.remove("hidden");
             songTitle.textContent = song.title;
             renderTags(song);
+            renderReadOnlyMeta(song);
             renderSongBody(song);
             updateTransposition();
             renderAllLists();
@@ -682,16 +706,28 @@
             tags.forEach(tag => {
                 const button = document.createElement("button");
                 button.type = "button";
-                button.className = "tag-button" + (normalize(tag) === normalize(activeTag) ? " active" : "");
+                button.className = "tag-button" + (normalizeSearch(tag) === normalizeSearch(activeTag) ? " active" : "");
                 button.textContent = tag;
                 button.addEventListener("click", () => {
-                    activeTag = normalize(tag) === normalize(activeTag) ? "" : tag;
+                    activeTag = normalizeSearch(tag) === normalizeSearch(activeTag) ? "" : tag;
                     searchInput.value = "";
                     renderAllLists();
                     renderTags(song);
                 });
                 songTags.appendChild(button);
             });
+        }
+
+        function renderReadOnlyMeta(song) {
+            const meta = [];
+            const rating = song.rating ?? song.ocena ?? song.stars;
+            const favorite = song.favorite ?? song.ulubione ?? song.ulubiona;
+
+            if (rating !== undefined && rating !== null && rating !== "") meta.push(`Ocena: ${rating}`);
+            if (favorite !== undefined && favorite !== null && favorite !== "") meta.push(`Ulubione: ${favorite}`);
+
+            songMeta.textContent = meta.join(" · ");
+            songMeta.classList.toggle("hidden", meta.length === 0);
         }
 
         function renderSongBody(song) {
@@ -711,8 +747,8 @@
                 lyricSpan.className = "lyric";
                 lyricSpan.textContent = line.text || " ";
 
-                if (chordSpan.textContent) row.appendChild(chordSpan);
                 row.appendChild(lyricSpan);
+                if (chordSpan.textContent) row.appendChild(chordSpan);
                 songBody.appendChild(row);
             });
         }
@@ -857,7 +893,7 @@
         }
 
         function updateThemeButton() {
-            themeToggle.textContent = body.classList.contains("light") ? "Tryb nocny" : "Tryb dzienny";
+            themeToggle.textContent = body.classList.contains("light") ? "Noc" : "Dzień";
         }
 
         function setScrollSpeed(value) {
@@ -881,15 +917,19 @@
             const elapsed = now - lastScrollTime;
             lastScrollTime = now;
             if (scrollSpeed > 0) {
-                contentArea.scrollTop += (scrollSpeed * elapsed) / 900;
+                contentArea.scrollTop += (scrollSpeed * elapsed) / 220;
                 scrollFrame = requestAnimationFrame(autoScroll);
             } else {
                 scrollFrame = null;
             }
         }
 
-        function normalize(value) {
-            return String(value || "").trim().toLowerCase();
+        function normalizeSearch(value) {
+            return String(value || "")
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .trim()
+                .toLowerCase();
         }
 
         function escapeHtml(value) {
