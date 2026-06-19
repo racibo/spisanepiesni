@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Śpiewnik Turystyczny v2</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .chord-badge {
+            color: #ff4b4b;
+            font-weight: bold;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 flex h-screen overflow-hidden font-sans">
+
+    <div id="sidebar" class="w-72 bg-gray-800 border-r border-gray-700 flex flex-col fixed inset-y-0 left-0 z-40 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out">
+        <div class="p-4 border-b border-gray-700 flex items-center justify-between">
+            <h1 class="text-xl font-bold text-red-400 flex items-center gap-2">
+                🎵 Śpiewnik v2
+            </h1>
+            <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white">
+                ✕
+            </button>
+        </div>
+        
+        <div class="p-3 border-b border-gray-700">
+            <input type="text" id="search" oninput="filterSongs()" placeholder="Szukaj tytułu lub tagu..." 
+                   class="w-full bg-gray-700 p-2 rounded text-sm text-white border border-gray-600 focus:outline-none focus:border-red-500 transition-colors">
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-2 space-y-1" id="song-list">
+            <div class="text-gray-400 p-4 text-center text-sm">Ładowanie bazy utworów...</div>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col h-full overflow-hidden relative">
+        
+        <div class="bg-gray-800 border-b border-gray-700 p-3 flex items-center justify-between md:hidden">
+            <button onclick="toggleSidebar()" class="bg-gray-700 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-gray-600">
+                ☰ Lista utworów
+            </button>
+            <span class="text-red-400 font-bold text-sm">Śpiewnik</span>
+        </div>
+
+        <div id="content-area" class="flex-1 overflow-y-auto p-4 md:p-8">
+            <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center p-4">
+                <div class="text-6xl mb-4">🎶</div>
+                <h2 class="text-2xl font-bold text-gray-300">Witaj w Śpiewniku!</h2>
+                <p class="text-gray-400 mt-2 max-w-md text-sm">Wybierz utwór z panelu bocznego. Strona działa całkowicie offline, a transpozycja akordów odbywa się natychmiastowo.</p>
+            </div>
+
+            <div id="song-screen" class="hidden max-w-3xl mx-auto">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-700 pb-4 mb-6 gap-4">
+                    <div>
+                        <h1 id="song-title" class="text-3xl md:text-4xl font-bold text-white tracking-tight">Tytuł piosenki</h1>
+                        <div id="song-tags" class="flex flex-wrap gap-1.5 mt-2"></div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2 bg-gray-800 p-2 rounded-xl border border-gray-700 self-start sm:self-auto">
+                        <span class="text-xs text-gray-400 font-medium px-1">TONACJA:</span>
+                        <button onclick="changeTransposition(-1)" class="bg-gray-700 hover:bg-red-500 text-white w-8 h-8 rounded-lg font-bold transition-colors">-1</button>
+                        <span id="transposition-val" class="font-mono bg-gray-900 w-12 text-center py-1 rounded-lg font-bold text-red-400 text-sm">0</span>
+                        <button onclick="changeTransposition(1)" class="bg-gray-700 hover:bg-red-500 text-white w-8 h-8 rounded-lg font-bold transition-colors">+1</button>
+                        <button onclick="resetTransposition()" class="text-xs text-gray-400 hover:text-white px-1.5">Reset</button>
+                    </div>
+                </div>
+
+                <div id="song-body" class="space-y-3 text-base md:text-lg whitespace-pre-wrap font-sans leading-relaxed">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Definicja polskiej skali muzycznej (z uwzględnieniem H zamiast Bb/B)
+        const notes = ["C", "Cis", "D", "Dis", "E", "F", "Fis", "G", "Gis", "A", "B", "H"];
+        
+        let allSongs = [];
+        let currentSong = null;
+        let currentTransposition = 0;
+
+        // Ładowanie bazy danych JSON
+        async function loadSongs() {
+            try {
+                const response = await fetch('songs.json');
+                if (!response.ok) throw new Error('Nie udało się pobrać pliku songs.json');
+                allSongs = await response.json();
+                renderSongList(allSongs);
+                handleRouting(); // Sprawdź czy w URL jest już link do piosenki
+            } catch (error) {
+                document.getElementById('song-list').innerHTML = `<div class="text-red-400 p-4 text-center text-sm">Błąd ładowania: ${error.message}</div>`;
+            }
+        }
+
+        function renderSongList(songsToRender) {
+            const container = document.getElementById("song-list");
+            container.innerHTML = "";
+            
+            if(songsToRender.length === 0) {
+                container.innerHTML = `<div class="text-gray-500 p-4 text-center text-sm">Brak utworów</div>`;
+                return;
+            }
+
+            songsToRender.forEach(song => {
+                const btn = document.createElement("a");
+                // Bezpieczny slug z tytułu do routingu URL
+                const slug = encodeURIComponent(song.title.trim());
+                btn.href = `#/${slug}`;
+                btn.className = "w-full text-left p-2.5 hover:bg-gray-700 rounded-lg transition-colors text-gray-300 block truncate text-sm font-medium";
+                btn.innerText = song.title;
+                
+                // Podświetlenie jeśli aktywna
+                if (currentSong && currentSong.title === song.title) {
+                    btn.className += " bg-red-950/40 text-red-400 border border-red-900/50";
+                }
+                
+                container.appendChild(btn);
+            });
+        }
+
+        function filterSongs() {
+            const query = document.getElementById("search").value.toLowerCase().trim();
+            const filtered = allSongs.filter(song => {
+                const titleMatch = song.title.toLowerCase().includes(query);
+                const tagMatch = song.tags && song.tags.some(t => t.toLowerCase().includes(query));
+                return titleMatch || tagMatch;
+            });
+            renderSongList(filtered);
+        }
+
+        // Zaawansowana transpozycja obsługująca polskie chwyty (wielkie/małe litery)
+        function transposeChord(chord, steps) {
+            if (steps === 0 || !chord) return chord;
+            
+            // Sprawdzenie czy akord jest molowy (np. "am", "fism")
+            let isMinor = chord.endsWith('m');
+            let cleanChord = isMinor ? chord.slice(0, -1) : chord;
+            
+            // Normalizacja wielkości liter dla bazy akordu (np. "am" -> bazy "A")
+            let baseChord = cleanChord;
+            if (cleanChord.length === 1) {
+                baseChord = cleanChord.toUpperCase();
+            } else if (cleanChord.length > 1) {
+                baseChord = cleanChord.charAt(0).toUpperCase() + cleanChord.slice(1);
+            }
+            
+            let idx = notes.indexOf(baseChord);
+            if (idx === -1) return chord; // Zwróć niezmieniony jeśli nie pasuje do skali
+            
+            let newIdx = (idx + steps) % 12;
+            if (newIdx < 0) newIdx += 12;
+            
+            let newBase = notes[newIdx];
+            
+            // Jeśli oryginalny akord był pisany w całości małą literą (np. "a"), zachowaj to
+            if (chord === chord.toLowerCase() && !isMinor) {
+                return newBase.toLowerCase();
+            }
+            
+            return newBase + (isMinor ? 'm' : '');
+        }
+
+        function displaySong(songTitle) {
+            const song = allSongs.find(s => s.title.trim() === songTitle);
+            if (!song) return;
+
+            currentSong = song;
+            
+            document.getElementById("welcome-screen").classList.add("hidden");
+            document.getElementById("song-screen").classList.remove("hidden");
+            
+            document.getElementById("song-title").innerText = song.title;
+            document.getElementById("transposition-val").innerText = (currentTransposition >= 0 ? "+" : "") + currentTransposition;
+
+            // Tagi
+            const tagsContainer = document.getElementById("song-tags");
+            tagsContainer.innerHTML = "";
+            if (song.tags && song.tags.length > 0) {
+                song.tags.forEach(tag => {
+                    const t = document.createElement("span");
+                    t.className = "bg-gray-800 text-gray-400 text-xs px-2 py-0.5 rounded border border-gray-700";
+                    t.innerText = tag;
+                    tagsContainer.appendChild(t);
+                });
+            }
+
+            // Renderowanie tekstu liniowego z akordami po prawej stronie
+            const bodyContainer = document.getElementById("song-body");
+            bodyContainer.innerHTML = "";
+
+            song.lyrics.forEach(line => {
+                const lineDiv = document.createElement("div");
+                lineDiv.className = "flex flex-col sm:flex-row border-b border-gray-800/30 py-1 hover:bg-gray-800/10 transition-colors";
+                
+                const textDiv = document.createElement("div");
+                textDiv.className = "w-full sm:w-3/4 pr-4 text-gray-200";
+                textDiv.innerText = line.text || " "; // Spacja zapobiega zapadaniu pustych linii
+                
+                const chordsDiv = document.createElement("div");
+                chordsDiv.className = "w-full sm:w-1/4 chord-badge mt-1 sm:mt-0";
+                
+                if (line.chords && line.chords.length > 0) {
+                    chordsDiv.innerText = line.chords.map(c => transposeChord(c, currentTransposition)).join("  ");
+                } else {
+                    chordsDiv.innerText = "";
+                }
+                
+                lineDiv.appendChild(textDiv);
+                lineDiv.appendChild(chordsDiv);
+                bodyContainer.appendChild(lineDiv);
+            });
+
+            // Odśwież podświetlenie aktywnej piosenki w sidebarze
+            renderSongList(allSongs);
+        }
+
+        function changeTransposition(steps) {
+            currentTransposition += steps;
+            if (currentSong) displaySong(currentSong.title);
+        }
+
+        function resetTransposition() {
+            currentTransposition = 0;
+            if (currentSong) displaySong(currentSong.title);
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("-translate-x-full");
+        }
+
+        // Obsługa routingu (linkowania bezpośredniego) np. indeks.html#/[Tytuł]
+        function handleRouting() {
+            const hash = window.location.hash;
+            if (hash && hash.startsWith("#/")) {
+                const songTitle = decodeURIComponent(hash.substring(2));
+                displaySong(songTitle);
+                
+                // Zamknij sidebar na urządzeniach mobilnych po wyborze utworu
+                document.getElementById("sidebar").classList.add("-translate-x-full");
+            }
+        }
+
+        // Nasłuchiwanie zmian w adresie URL
+        window.addEventListener('hashchange', handleRouting);
+
+        // Uruchomienie aplikacji
+        loadSongs();
+    </script>
+</body>
+</html>
