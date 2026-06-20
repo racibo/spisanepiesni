@@ -229,24 +229,74 @@
         
         .song-line { 
             display: flex; 
+            flex-direction: column;
             width: 100%;
-            align-items: baseline;
-            gap: 15px; 
-            padding: 4px 0; 
+            gap: 0; 
+            padding: 3px 0; 
             border-bottom: 1px solid color-mix(in srgb, var(--border) 20%, transparent); 
         }
         
-        .chords { color: var(--accent); font-family: monospace; font-size: var(--chord-font-size); font-weight: 800; }
+        .chords { 
+            color: var(--accent); 
+            font-family: monospace; 
+            font-size: var(--chord-font-size); 
+            font-weight: 800; 
+            line-height: 1.15;
+        }
         .lyric { 
             color: var(--text); 
             white-space: pre-wrap; 
             word-break: break-word;
-            flex: 1; 
             min-height: 1.2em; 
         }
 
+        .song-line:has(.chords) .lyric { margin-top: 1px; }
+
         .empty { color: var(--muted); font-size: 0.9rem; font-style: italic; }
         .hidden { display: none !important; }
+
+        .song-nav {
+            display: flex;
+            gap: 10px;
+            margin-top: 22px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .song-nav-link {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: var(--panel-2);
+            color: var(--text);
+            text-decoration: none;
+            min-width: 0;
+            transition: all 0.15s ease;
+        }
+
+        .song-nav-link:hover { background: var(--hover); border-color: var(--accent); }
+
+        .song-nav-next { text-align: right; align-items: flex-end; }
+
+        .song-nav-label {
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .song-nav-title {
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
 
         @media (max-width: 780px) {
             .sidebar {
@@ -266,6 +316,7 @@
                     <button id="sidebar-toggle" class="icon-button" title="Panel">☰</button>
                     <span class="brand">Śpiewnik</span>
                     <button id="random-btn" class="small-button">🎲 Losuj</button>
+                    <button id="newest-btn" class="small-button" title="Przejdź do najnowszej piosenki w śpiewniku">🆕 Najnowsza</button>
                 </div>
                 <div class="topbar-divider"></div>
                 <div class="topbar-group">
@@ -294,6 +345,11 @@
                         <div id="song-tags" class="tags"></div>
                     </div>
                     <div id="song-body" class="song-body"></div>
+
+                    <nav id="song-nav" class="song-nav">
+                        <a id="song-nav-prev" class="song-nav-link song-nav-prev hidden" href="#"></a>
+                        <a id="song-nav-next" class="song-nav-link song-nav-next hidden" href="#"></a>
+                    </nav>
                 </section>
                 <div id="welcome-screen" class="empty">Pobieranie bazy piosenek...</div>
             </div>
@@ -334,7 +390,10 @@
                 </section>
 
                 <section class="side-section">
-                    <div class="side-section-title">Kategorie</div>
+                    <div class="side-section-title">
+                        Kategorie
+                        <button id="tag-sort-toggle" class="icon-button" style="width: auto; height: 24px; padding: 0 7px; font-size: 0.7rem; font-weight: 700;" title="Zmień sortowanie kategorii">A-Z</button>
+                    </div>
                     <div id="random-tags" class="tag-cloud"></div>
                 </section>
             </div>
@@ -344,13 +403,19 @@
     <script>
         const polishNames = ["C", "Cis", "D", "Dis", "E", "F", "Fis", "G", "Gis", "A", "B", "H"];
         const noteValues = {
+            // Podstawowe
             C:0, "C#":1, Cis:1, Db:1,
             D:2, "D#":3, Dis:3, Eb:3,
-            E:4,
+            E:4, Es:3, Eis:5, Fes:4,
             F:5, "F#":6, Fis:6, Gb:6,
             G:7, "G#":8, Gis:8, Ab:8,
             A:9, "A#":10, Ais:10, B:10,
-            H:11
+            H:11, Bis:0,
+            // Podwójne podwyższenia/obniżenia (np. Cisis, Disis, Fisis) —
+            // sprowadzane do najbliższego poprawnego dźwięku, bo "Cisis" itp.
+            // jako nazwa akordu nie istnieje, tylko D, E, G itd.
+            Cisis:2, Disis:4, Eisis:7, Fisis:7, Gisis:9, Aisis:11, Hisis:1,
+            Ceses:10, Deses:0, Eeses:2, Feses:3, Geses:5, Aeses:7, Heses:9
         };
 
         let allSongs = [];
@@ -363,6 +428,9 @@
         // Zmienne do wyglądu
         let songFontSize = 1;
         let chordFontSize = 1.28;
+
+        // Sortowanie kategorii: "alpha" (alfabetyczne) lub "freq" (najczęstsze najpierw)
+        let tagSortMode = "alpha";
 
         // Zmienne do autoscrollingu
         let scrollSpeedState = 0; // 0: off, 1: wolno, 2: średnio, 3: szybko
@@ -387,7 +455,21 @@
             }
         });
 
+        document.getElementById("newest-btn").addEventListener("click", () => {
+            if (allSongs.length > 0) {
+                const newestSong = allSongs[allSongs.length - 1];
+                displaySong(newestSong);
+                history.pushState(null, "", `#/${encodeURIComponent(newestSong.title)}`);
+                if (window.matchMedia("(max-width: 780px)").matches) body.classList.add("sidebar-hidden");
+            }
+        });
+
         document.getElementById("reroll-random-btn").addEventListener("click", renderRandomSidebarList);
+
+        document.getElementById("tag-sort-toggle").addEventListener("click", () => {
+            tagSortMode = tagSortMode === "alpha" ? "freq" : "alpha";
+            renderTagCloud();
+        });
 
         document.getElementById("transpose-down").addEventListener("click", () => changeTransposition(-1));
         document.getElementById("transpose-up").addEventListener("click", () => changeTransposition(1));
@@ -486,12 +568,32 @@
             if (topRated.length > 0) topRated.forEach(song => ratedList.appendChild(createSongLink(song)));
             else ratedList.innerHTML = '<div class="empty">Brak ocenionych utworów.</div>';
 
+            renderTagCloud();
+        }
+
+        function renderTagCloud() {
+            const toggleBtn = document.getElementById("tag-sort-toggle");
+            toggleBtn.textContent = tagSortMode === "alpha" ? "A-Z" : "🔥";
+            toggleBtn.title = tagSortMode === "alpha"
+                ? "Sortowanie: alfabetyczne (kliknij, by sortować wg popularności)"
+                : "Sortowanie: najczęstsze (kliknij, by sortować alfabetycznie)";
+
             const tagContainer = document.getElementById("random-tags");
             tagContainer.innerHTML = "";
-            let allTags = new Set();
-            allSongs.forEach(s => s.tags.forEach(t => allTags.add(t)));
-            
-            Array.from(allTags).sort().forEach(tag => {
+
+            const tagCounts = new Map();
+            allSongs.forEach(s => (s.tags || []).forEach(t => {
+                tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
+            }));
+
+            let tagEntries = Array.from(tagCounts.entries());
+            if (tagSortMode === "alpha") {
+                tagEntries.sort((a, b) => a[0].localeCompare(b[0], "pl"));
+            } else {
+                tagEntries.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "pl"));
+            }
+
+            tagEntries.forEach(([tag]) => {
                 const btn = document.createElement("button");
                 btn.className = "tag-button";
                 btn.textContent = tag;
@@ -522,6 +624,45 @@
             } else {
                 section.classList.add("hidden");
             }
+        }
+
+        function renderSongNav() {
+            const prevLink = document.getElementById("song-nav-prev");
+            const nextLink = document.getElementById("song-nav-next");
+            if (!currentSong || allSongs.length < 2) {
+                prevLink.classList.add("hidden");
+                nextLink.classList.add("hidden");
+                return;
+            }
+
+            const idx = allSongs.findIndex(s => s.title === currentSong.title);
+            if (idx === -1) {
+                prevLink.classList.add("hidden");
+                nextLink.classList.add("hidden");
+                return;
+            }
+
+            const prevSong = idx > 0 ? allSongs[idx - 1] : null;
+            const nextSong = idx < allSongs.length - 1 ? allSongs[idx + 1] : null;
+
+            setupNavLink(prevLink, prevSong, "‹ Wcześniejsza");
+            setupNavLink(nextLink, nextSong, "Następna ›");
+        }
+
+        function setupNavLink(linkEl, song, label) {
+            if (!song) {
+                linkEl.classList.add("hidden");
+                linkEl.onclick = null;
+                return;
+            }
+            linkEl.classList.remove("hidden");
+            linkEl.innerHTML = `<span class="song-nav-label">${label}</span><span class="song-nav-title">${song.title}</span>`;
+            linkEl.href = `#/${encodeURIComponent(song.title)}`;
+            linkEl.onclick = (e) => {
+                e.preventDefault();
+                displaySong(song);
+                history.pushState(null, "", `#/${encodeURIComponent(song.title)}`);
+            };
         }
 
         function createSongLink(song) {
@@ -582,6 +723,7 @@
 
             renderLyrics();
             renderSameTagList();
+            renderSongNav();
             
             document.querySelectorAll(".song-link").forEach(link => {
                 link.classList.toggle("active", link.textContent === song.title);
@@ -594,11 +736,6 @@
             currentSong.lyrics.forEach(line => {
                 const row = document.createElement("div");
                 row.className = "song-line";
-                
-                const lyricSpan = document.createElement("div");
-                lyricSpan.className = "lyric";
-                lyricSpan.innerHTML = (line.text || " ").replace(/\n/g, "<br>");
-                row.appendChild(lyricSpan);
 
                 if (line.chords && line.chords.length > 0) {
                     const chordSpan = document.createElement("div");
@@ -606,6 +743,12 @@
                     chordSpan.textContent = line.chords.map(c => transposeChordStr(c, currentTransposition)).join(" ");
                     row.appendChild(chordSpan);
                 }
+
+                const lyricSpan = document.createElement("div");
+                lyricSpan.className = "lyric";
+                lyricSpan.innerHTML = (line.text || " ").replace(/\n/g, "<br>");
+                row.appendChild(lyricSpan);
+
                 container.appendChild(row);
             });
         }
@@ -645,22 +788,24 @@
         }
 
         function transposeChordStr(chordStr, steps) {
-            if (steps === 0) return chordStr;
-            const match = chordStr.match(/^([A-Ha-h][#bis]??)(.*)$/);
+            // Najpierw zawsze normalizujemy zapis nuty (np. Eis -> F, Cisis -> D),
+            // nawet gdy steps === 0, bo w danych źródłowych mogą wystąpić
+            // niepoprawne/nietypowe zapisy enharmoniczne (np. podwójne podwyższenia).
+            const match = chordStr.match(/^([A-Ha-h](?:isis|is|eses|es|s|##|#|bb|b)?)(.*)$/);
             if (!match) return chordStr;
-            
+
             let base = match[1];
-            let isMinor = base === base.toLowerCase();
+            const rest = match[2];
+            let isMinor = base.charAt(0) === base.charAt(0).toLowerCase();
             base = base.charAt(0).toUpperCase() + base.slice(1);
-            if (base === "B") base = "Ais";
-            
+
             let val = noteValues[base];
             if (val === undefined) return chordStr;
 
             let newVal = ((val + steps) % 12 + 12) % 12;
             let newBase = polishNames[newVal];
-            
-            return (isMinor ? newBase.toLowerCase() : newBase) + match[2];
+
+            return (isMinor ? newBase.toLowerCase() : newBase) + rest;
         }
 
         // ---- LOGIKA ROZMIARU TEKSTU ----
