@@ -323,6 +323,11 @@
                     <div id="same-tag-list" class="quick-list"></div>
                 </section>
 
+            <div id="default-sections" class="side-section">
+                <div class="side-section-title">Propozycje losowe</div>
+                <div id="random-list" class="quick-list"></div>
+            </div>
+
                 <section class="side-section">
                     <div class="side-section-title">Najwyżej oceniane / Ulubione</div>
                     <div id="rated-list" class="quick-list"></div>
@@ -378,24 +383,28 @@
 
         // Ładowanie bazy
         async function loadSongs() {
-            try {
-                // Dodano cache-busting, by na telefonach szybciej łapało nową wersję
-                const response = await fetch("songs.json?" + new Date().getTime());
-                if (!response.ok) throw new Error("Nie znaleziono bazy");
-                allSongs = await response.json();
-                
-                document.getElementById("welcome-screen").innerHTML = `
-                    <div style="font-size: 3rem; margin-bottom: 10px;">🎸</div>
-                    <h2>Witaj w Śpiewniku!</h2>
-                    <p>Załadowano ${allSongs.length} utworów.</p>
-                    <p>Wyszukaj piosenkę w panelu bocznym.</p>
-                `;
-                
-                renderDefaultSidebar();
-                loadSongFromHash();
-            } catch (err) {
-                document.getElementById("welcome-screen").textContent = "Błąd: " + err.message;
-            }
+            const res = await fetch("songs.json");
+            allSongs = await res.json();
+            
+            renderRandomList(); // Generuje listę losową w panelu
+            
+            // Losowanie piosenki startowej
+            const randomSong = allSongs[Math.floor(Math.random() * allSongs.length)];
+            displaySong(randomSong);
+        }
+
+        function renderRandomList() {
+            const list = document.getElementById("random-list");
+            list.innerHTML = "";
+            // Losujemy 5 piosenek z całej bazy
+            [...allSongs].sort(() => 0.5 - Math.random()).slice(0, 5).forEach(s => {
+                const a = document.createElement("a");
+                a.className = "song-link";
+                a.textContent = s.title;
+                a.style.cursor = "pointer";
+                a.onclick = () => displaySong(s);
+                list.appendChild(a);
+            });
         }
 
         // Obsługa wyszukiwarki
@@ -604,6 +613,34 @@
             chordFontSize = Math.max(1.0, Math.min(2.5, chordFontSize + delta * 1.3));
             document.documentElement.style.setProperty("--song-font-size", `${songFontSize}rem`);
             document.documentElement.style.setProperty("--chord-font-size", `${chordFontSize}rem`);
+        }
+        
+        function toggleInstrument() {
+            const btn = document.getElementById("transpose-toggle");
+            // Uku +5 to standardowa transpozycja z Gitary na Ukulele
+            if (currentTransposition === 5) {
+                currentTransposition = 0;
+                btn.textContent = "Uku (Gitara)";
+            } else {
+                currentTransposition = 5;
+                btn.textContent = "Gitara (Ukulele)";
+            }
+            renderLyrics();
+        }
+
+        function transpose(chord) {
+            const match = chord.match(/^([A-Ha-h][#bis]??)(.*)$/);
+            if (!match) return chord;
+            
+            let base = match[1].charAt(0).toUpperCase() + match[1].slice(1);
+            if (base === "B") base = "Ais"; 
+            
+            let val = noteValues[base];
+            if (val === undefined) return chord;
+            
+            // Logika matematyczna przesunięcia
+            let newVal = ((val + currentTransposition) % 12 + 12) % 12;
+            return polishNames[newVal] + match[2];
         }
 
         loadSongs();
