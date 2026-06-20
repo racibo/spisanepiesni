@@ -134,6 +134,9 @@
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .quick-list {
@@ -203,7 +206,7 @@
             flex: 1;
             overflow-y: auto;
             padding: 20px clamp(15px, 3vw, 30px);
-            scroll-behavior: smooth;
+            scroll-behavior: auto; /* Wyłączone płynne przewijanie CSS dla lepszego autoscrollu */
         }
 
         .song-screen { max-width: 900px; margin: 0 auto; }
@@ -318,7 +321,10 @@
                 </section>
 
                 <section class="side-section">
-                    <div class="side-section-title">Propozycje losowe</div>
+                    <div class="side-section-title">
+                        Propozycje losowe
+                        <button id="reroll-random-btn" class="icon-button" style="width: 24px; height: 24px; font-size: 0.9rem; border: none; background: transparent;" title="Losuj nowe">↻</button>
+                    </div>
                     <div id="random-list" class="quick-list"></div>
                 </section>
 
@@ -361,6 +367,8 @@
         // Zmienne do autoscrollingu
         let scrollSpeedState = 0; // 0: off, 1: wolno, 2: średnio, 3: szybko
         let scrollAnimationId;
+        let lastTimestamp = 0;
+        let accumulatedScroll = 0;
 
         const body = document.body;
         const searchInput = document.getElementById("search");
@@ -378,6 +386,8 @@
                 history.pushState(null, "", `#/${encodeURIComponent(randomSong.title)}`);
             }
         });
+
+        document.getElementById("reroll-random-btn").addEventListener("click", renderRandomSidebarList);
 
         document.getElementById("transpose-down").addEventListener("click", () => changeTransposition(-1));
         document.getElementById("transpose-up").addEventListener("click", () => changeTransposition(1));
@@ -451,10 +461,15 @@
             }
         }
 
-        function renderDefaultSidebar() {
+        function renderRandomSidebarList() {
             const randList = document.getElementById("random-list");
+            if(!randList || allSongs.length === 0) return;
             randList.innerHTML = "";
             [...allSongs].sort(() => 0.5 - Math.random()).slice(0, 5).forEach(s => randList.appendChild(createSongLink(s)));
+        }
+
+        function renderDefaultSidebar() {
+            renderRandomSidebarList();
 
             const ratedList = document.getElementById("rated-list");
             ratedList.innerHTML = "";
@@ -538,7 +553,6 @@
         function displaySong(song) {
             currentSong = song;
             
-            // Resetowanie stanów przy nowej piosence
             resetTransposition();
             stopAutoScroll();
             
@@ -548,7 +562,6 @@
             
             document.getElementById("song-title").textContent = song.title;
             
-            // Dyskretna ocena (dymek za pomocą atrybutu title w spanie)
             const metaDiv = document.getElementById("song-meta");
             if (parseInt(song.ratings_count || 0) > 0) {
                 const avg = (parseFloat(song.ratings_sum) / parseFloat(song.ratings_count)).toFixed(1);
@@ -614,11 +627,9 @@
         function toggleUku() {
             if (!currentSong) return;
             if (isUkuMode) {
-                // Jeśli byliśmy w trybie Uku, odejmujemy te 7 półtonów by wrócić
                 currentTransposition -= 7;
                 isUkuMode = false;
             } else {
-                // Dodajemy 7 półtonów relatywnie do aktualnej wartości
                 currentTransposition += 7;
                 isUkuMode = true;
             }
@@ -671,8 +682,10 @@
                 stopAutoScroll();
             } else {
                 btn.textContent = `⏸ Prędkość x${scrollSpeedState}`;
-                if (scrollSpeedState === 1) { // Uruchamia pętlę tylko przy pierwszym włączeniu
-                    autoScrollLoop();
+                if (scrollSpeedState === 1) { 
+                    lastTimestamp = 0;
+                    accumulatedScroll = 0;
+                    scrollAnimationId = requestAnimationFrame(autoScrollLoop);
                 }
             }
         }
@@ -681,19 +694,29 @@
             scrollSpeedState = 0;
             document.getElementById("auto-scroll-btn").textContent = "▶ Przewijaj";
             cancelAnimationFrame(scrollAnimationId);
+            lastTimestamp = 0;
+            accumulatedScroll = 0;
         }
 
-        function autoScrollLoop() {
+        function autoScrollLoop(timestamp) {
             if (scrollSpeedState > 0) {
-                const contentArea = document.getElementById("content-area");
-                
-                // Dostosowanie prędkości: 0.3, 0.7, lub 1.2 pixela na klatkę
-                let pixelStep = 0;
-                if(scrollSpeedState === 1) pixelStep = 0.3;
-                else if(scrollSpeedState === 2) pixelStep = 0.7;
-                else if(scrollSpeedState === 3) pixelStep = 1.2;
+                if (!lastTimestamp) lastTimestamp = timestamp;
+                const deltaTime = timestamp - lastTimestamp;
+                lastTimestamp = timestamp;
 
-                contentArea.scrollTop += pixelStep;
+                let pixelsPerSecond = 0;
+                if(scrollSpeedState === 1) pixelsPerSecond = 8;
+                else if(scrollSpeedState === 2) pixelsPerSecond = 15;
+                else if(scrollSpeedState === 3) pixelsPerSecond = 25;
+
+                accumulatedScroll += (pixelsPerSecond * deltaTime) / 1000;
+
+                if (accumulatedScroll >= 1) {
+                    const pixelsToScroll = Math.floor(accumulatedScroll);
+                    document.getElementById("content-area").scrollTop += pixelsToScroll;
+                    accumulatedScroll -= pixelsToScroll;
+                }
+
                 scrollAnimationId = requestAnimationFrame(autoScrollLoop);
             }
         }
