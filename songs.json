@@ -32437,29 +32437,47 @@
     "title": "Pijak",
     "lyrics": [
       {
-        "text": "Napełnij szklankę mi ostatni nalej raz a C H7 E",
-        "chords": []
+        "text": "Napełnij szklankę mi ostatni nalej raz",
+        "chords": [
+          "a",
+          "C",
+          "H7",
+          "E",
+          "|"
+        ]
       },
       {
         "text": "Napełnij szklankę mi I pójdę bo już czas",
         "chords": []
       },
       {
-        "text": "Nie płaczę pozwól pić Bo wstyd mi sobą być a d G C E7",
-        "chords": []
-      },
-      {
-        "text": "Napełnij szklankę mi",
-        "chords": []
+        "text": "Nie płaczę pozwól pić Bo wstyd mi sobą być",
+        "chords": [
+          "a",
+          "d",
+          "G",
+          "C",
+          "E7",
+          "|"
+        ]
       },
       {
         "text": "Napełnij szklankę mi",
         "chords": [
           "a",
-          "d",
+          "d"
+        ]
+      },
+      {
+        "text": "Napełnij szklankę mi",
+        "chords": [
           "e",
           "a"
         ]
+      },
+      {
+        "text": "",
+        "chords": []
       },
       {
         "text": "Pijemy zdrowie twe",
