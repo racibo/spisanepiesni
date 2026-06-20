@@ -229,10 +229,13 @@
         
         .song-line { 
             display: flex; 
-            flex-direction: column;
+            flex-direction: row;
+            flex-wrap: wrap;
             width: 100%;
-            gap: 0; 
-            padding: 3px 0; 
+            align-items: baseline;
+            column-gap: 16px;
+            row-gap: 2px;
+            padding: 4px 0; 
             border-bottom: 1px solid color-mix(in srgb, var(--border) 20%, transparent); 
         }
         
@@ -242,15 +245,38 @@
             font-size: var(--chord-font-size); 
             font-weight: 800; 
             line-height: 1.15;
+            white-space: nowrap;
+            flex: 0 0 auto;
+            order: 2;
         }
         .lyric { 
             color: var(--text); 
             white-space: pre-wrap; 
             word-break: break-word;
             min-height: 1.2em; 
+            flex: 0 1 auto;
+            order: 1;
         }
 
-        .song-line:has(.chords) .lyric { margin-top: 1px; }
+        /* Tryb "akordy nad tekstem" — włączany przyciskiem w topbarze */
+        body.chords-above .song-line {
+            flex-direction: column;
+            flex-wrap: nowrap;
+            align-items: stretch;
+            row-gap: 0;
+            column-gap: 0;
+            padding: 3px 0;
+        }
+        body.chords-above .chords {
+            order: 0;
+            white-space: normal;
+            flex: 1 1 auto;
+        }
+        body.chords-above .lyric {
+            order: 1;
+            margin-top: 1px;
+            flex: 1 1 auto;
+        }
 
         .empty { color: var(--muted); font-size: 0.9rem; font-style: italic; }
         .hidden { display: none !important; }
@@ -330,6 +356,7 @@
                 <div class="topbar-group">
                     <button id="text-smaller" class="small-button">A-</button>
                     <button id="text-bigger" class="small-button">A+</button>
+                    <button id="chord-layout-toggle" class="small-button" title="Przełącz układ akordów: obok tekstu / nad tekstem">Akordy: obok</button>
                 </div>
                 <div class="topbar-divider"></div>
                 <div class="topbar-group">
@@ -432,6 +459,9 @@
         // Sortowanie kategorii: "alpha" (alfabetyczne) lub "freq" (najczęstsze najpierw)
         let tagSortMode = "alpha";
 
+        // Układ akordów: "beside" (obok tekstu, domyślnie) lub "above" (nad tekstem)
+        let chordLayoutMode = localStorage.getItem("chordLayoutMode") || "beside";
+
         // Zmienne do autoscrollingu
         let scrollSpeedState = 0; // 0: off, 1: wolno, 2: średnio, 3: szybko
         let scrollAnimationId;
@@ -478,6 +508,19 @@
         
         document.getElementById("text-smaller").addEventListener("click", () => changeTextSize(-0.1));
         document.getElementById("text-bigger").addEventListener("click", () => changeTextSize(0.1));
+
+        document.getElementById("chord-layout-toggle").addEventListener("click", () => {
+            chordLayoutMode = chordLayoutMode === "beside" ? "above" : "beside";
+            localStorage.setItem("chordLayoutMode", chordLayoutMode);
+            applyChordLayoutMode();
+        });
+
+        function applyChordLayoutMode() {
+            body.classList.toggle("chords-above", chordLayoutMode === "above");
+            document.getElementById("chord-layout-toggle").textContent =
+                chordLayoutMode === "above" ? "Akordy: nad" : "Akordy: obok";
+        }
+        applyChordLayoutMode();
         
         document.getElementById("auto-scroll-btn").addEventListener("click", toggleAutoScroll);
         
