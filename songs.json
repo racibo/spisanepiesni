@@ -9189,26 +9189,32 @@
       {
         "text": "Jedyne co mam to złudzenia",
         "chords": [
-          "a",
-          "a",
-          "G",
-          "a",
-          "G",
-          "a",
-          "e",
-          "G"
+          "a"
         ]
       },
       {
         "text": "Że mogę mieć własne pragnienia",
-        "chords": []
+        "chords": [
+          "G",
+          "a"
+        ]
       },
       {
         "text": "Jedyne co mam to złudzenia",
-        "chords": []
+        "chords": [
+          "d",
+          "a"
+        ]
       },
       {
         "text": "Że mogę je mieć",
+        "chords": [
+          "G",
+          "a"
+        ]
+      },
+      {
+        "text": "",
         "chords": []
       },
       {
@@ -9229,6 +9235,10 @@
       },
       {
         "text": "Bez siebie jak żyć",
+        "chords": []
+      },
+      {
+        "text": "",
         "chords": []
       },
       {
@@ -9256,6 +9266,10 @@
         "chords": []
       },
       {
+        "text": "",
+        "chords": []
+      },
+      {
         "text": "Miałam serce dla wszystkich",
         "chords": []
       },
@@ -9277,6 +9291,10 @@
       },
       {
         "text": "Jedyne co mam...",
+        "chords": []
+      },
+      {
+        "text": "",
         "chords": []
       },
       {
@@ -17825,7 +17843,9 @@
     ],
     "ratings_sum": 0,
     "ratings_count": 0,
-    "tags": []
+    "tags": [
+      "Nohavica"
+    ]
   },
   {
     "title": "Mydełko  „Fa”",
@@ -23838,9 +23858,11 @@
         "chords": []
       }
     ],
-    "ratings_sum": 0,
-    "ratings_count": 0,
-    "tags": []
+    "ratings_sum": 5,
+    "ratings_count": 1,
+    "tags": [
+      "Reggae"
+    ]
   },
   {
     "title": "Wybiła godzina druga",
@@ -26616,7 +26638,9 @@
     ],
     "ratings_sum": 0,
     "ratings_count": 0,
-    "tags": []
+    "tags": [
+      "Nohavica"
+    ]
   },
   {
     "title": "Kiedy odwalę kitę",
