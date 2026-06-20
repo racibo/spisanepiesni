@@ -492,13 +492,36 @@
             }
         }
 
-        function createSongLink(song) {
-            const a = document.createElement("a");
-            a.href = `#/${encodeURIComponent(song.title)}`;
-            a.className = "song-link" + (currentSong && currentSong.title === song.title ? " active" : "");
-            a.textContent = song.title;
-            return a;
+function createSongLink(song) {
+    const a = document.createElement("a");
+
+    a.href = `#/${encodeURIComponent(song.title)}`;
+    a.className = "song-link" + (
+        currentSong && currentSong.title === song.title
+            ? " active"
+            : ""
+    );
+
+    a.textContent = song.title;
+
+    a.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        displaySong(song);
+
+        history.replaceState(
+            null,
+            "",
+            `#/${encodeURIComponent(song.title)}`
+        );
+
+        if (window.matchMedia("(max-width: 780px)").matches) {
+            body.classList.add("sidebar-hidden");
         }
+    });
+
+    return a;
+}
 
         function loadSongFromHash() {
             if (!allSongs.length) return;
