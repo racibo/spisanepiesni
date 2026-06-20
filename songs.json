@@ -15510,7 +15510,9 @@
     ],
     "ratings_sum": 0,
     "ratings_count": 0,
-    "tags": []
+    "tags": [
+      "Alosza"
+    ]
   },
   {
     "title": "Prowokator",
@@ -28135,7 +28137,9 @@
     ],
     "ratings_sum": 0,
     "ratings_count": 0,
-    "tags": []
+    "tags": [
+      "Nohavica"
+    ]
   },
   {
     "title": "Zajíci",
@@ -29040,27 +29044,91 @@
     "title": "Ukolébavka pro Kubu a Lenku",
     "lyrics": [
       {
-        "text": "Den už se zešeřil G G/Fis už jste si dost užili G/E G/Fis G tak hajdy do peřin a a/Gis a ne abyste tam moc řádili a/G a/Gis",
+        "text": "Den už se zešeřil",
         "chords": [
+          "G",
+          "G/Fis"
+        ]
+      },
+      {
+        "text": "už jste si dost užili",
+        "chords": [
+          "G/E",
+          "G/Fis",
+          "G"
+        ]
+      },
+      {
+        "text": "tak hajdy do peřin a a/Gis a ne abyste tam moc řádili",
+        "chords": [
+          "a/G",
+          "a/Gis",
+          "|",
           "a"
         ]
+      },
+      {
+        "text": "",
+        "chords": []
       },
       {
         "text": "zítra je taky den slunko mi to dneska slíbilo přejte si hezký sen a kéž by se vám to splnilo",
         "chords": []
       },
       {
-        "text": "nanana Gehe aby hůř nebylo to by nám stačilo aD7",
-        "chords": []
+        "text": "nanana Gehe aby hůř nebylo to by nám stačilo",
+        "chords": [
+          "aD7",
+          "|"
+        ]
       },
       {
-        "text": "Hajduly dajduly aby víčka sklapnuly G C G D7 hajduly dajdy každý svou peřinu najdi hajajajajajajaja G D7 G Kuba Lenka máma a já D7 G zítra dřív než slunce začne hřát CG dobrou noc a spát D7",
+        "text": "Hajduly dajduly aby víčka sklapnuly",
         "chords": [
+          "G",
+          "C",
+          "G",
+          "D7"
+        ]
+      },
+      {
+        "text": "hajduly dajdy každý svou peřinu najdi hajajajajajajaja",
+        "chords": [
+          "G",
+          "D7",
           "G"
         ]
       },
       {
-        "text": "V noci někdy chodí strach a srdce náhle dělá buch buchy nebojte já spím na dosah když mě zavoláte zbiju zlé duchy",
+        "text": "Kuba Lenka máma a já",
+        "chords": [
+          "D7",
+          "G"
+        ]
+      },
+      {
+        "text": "zítra dřív než slunce začne hřát",
+        "chords": [
+          "CG"
+        ]
+      },
+      {
+        "text": "dobrou noc a spát",
+        "chords": [
+          "D7",
+          "G"
+        ]
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "V noci někdy chodí strach a srdce náhle dělá buch buchy",
+        "chords": []
+      },
+      {
+        "text": "nebojte já spím na dosah když mě zavoláte zbiju zlé duchy",
         "chords": []
       },
       {
@@ -39366,7 +39434,9 @@
     ],
     "ratings_sum": 0,
     "ratings_count": 0,
-    "tags": []
+    "tags": [
+      "Wodecki"
+    ]
   },
   {
     "title": "Gdybym był rybą w Ukajali",
