@@ -109,7 +109,7 @@
             background: var(--panel);
         }
 
-        .search-wrap input, .target-input {
+        .search-wrap input {
             width: 100%;
             border: 1px solid var(--border);
             border-radius: 7px;
@@ -141,13 +141,7 @@
             gap: 5px;
         }
 
-        #search-results-section {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 20px;
-        }
-
-        #default-sections {
+        #search-results-section, #default-sections {
             flex: 1;
             overflow-y: auto;
             padding-bottom: 20px;
@@ -209,6 +203,7 @@
             flex: 1;
             overflow-y: auto;
             padding: 20px clamp(15px, 3vw, 30px);
+            scroll-behavior: smooth;
         }
 
         .song-screen { max-width: 900px; margin: 0 auto; }
@@ -218,20 +213,13 @@
         .tags { display: flex; gap: 6px; flex-wrap: wrap; }
         .tags .tag-button { border-color: rgba(226, 75, 75, 0.4); color: var(--accent); border-radius: 15px; }
 
-        .info-box {
-            background: var(--panel-2);
-            padding: 10px;
-            border-radius: 7px;
-            font-size: 0.8rem;
+        .rating-badge {
+            display: inline-block;
+            cursor: help;
+            border-bottom: 1px dotted var(--muted);
             color: var(--muted);
-            margin-bottom: 15px;
-            border: 1px solid var(--border);
-        }
-
-        .info-box a {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: bold;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
         }
 
         .song-body { font-size: var(--song-font-size); line-height: 1.3; }
@@ -281,7 +269,7 @@
                     <button id="transpose-down" class="small-button">-1</button>
                     <span id="transposition-val" class="meter">0</span>
                     <button id="transpose-up" class="small-button">+1</button>
-                    <button id="transpose-uku" class="small-button" title="Transpozycja Gitara -> Ukulele (+7 półtonów)">Uku (G-dur)</button>
+                    <button id="transpose-uku" class="small-button" title="Transpozycja Gitara <-> Ukulele (+7 półtonów)">Uku</button>
                     <button id="transpose-reset" class="small-button">Reset</button>
                 </div>
                 <div class="topbar-divider"></div>
@@ -289,16 +277,17 @@
                     <button id="text-smaller" class="small-button">A-</button>
                     <button id="text-bigger" class="small-button">A+</button>
                 </div>
+                <div class="topbar-divider"></div>
+                <div class="topbar-group">
+                    <button id="auto-scroll-btn" class="small-button">▶ Przewijaj</button>
+                </div>
             </header>
 
             <div id="content-area" class="content">
                 <section id="song-screen" class="song-screen hidden">
                     <div class="song-head">
                         <h1 id="song-title"></h1>
-                        <div id="song-meta" style="color: var(--muted); font-size: 0.85rem; margin-bottom: 10px;"></div>
-                        <div id="info-box" class="info-box hidden">
-                            Ocenianie piosenek dostępne jest tylko w wersji roboczej: <a href="https://spiewnik.streamlit.app/" target="_blank">spiewnik.streamlit.app</a>
-                        </div>
+                        <div id="song-meta"></div>
                         <div id="song-tags" class="tags"></div>
                     </div>
                     <div id="song-body" class="song-body"></div>
@@ -360,16 +349,25 @@
 
         let allSongs = [];
         let currentSong = null;
+        
+        // Zmienne do transpozycji
         let currentTransposition = 0;
+        let isUkuMode = false;
+
+        // Zmienne do wyglądu
         let songFontSize = 1;
         let chordFontSize = 1.28;
+
+        // Zmienne do autoscrollingu
+        let scrollSpeedState = 0; // 0: off, 1: wolno, 2: średnio, 3: szybko
+        let scrollAnimationId;
 
         const body = document.body;
         const searchInput = document.getElementById("search");
         const defaultSections = document.getElementById("default-sections");
         const searchResultsSection = document.getElementById("search-results-section");
 
-        // Bindowanie zdarzeń
+        // Bindowanie zdarzeń UI
         document.getElementById("sidebar-toggle").addEventListener("click", () => body.classList.toggle("sidebar-hidden"));
         document.getElementById("sidebar-close").addEventListener("click", () => body.classList.add("sidebar-hidden"));
         
@@ -384,31 +382,25 @@
         document.getElementById("transpose-down").addEventListener("click", () => changeTransposition(-1));
         document.getElementById("transpose-up").addEventListener("click", () => changeTransposition(1));
         document.getElementById("transpose-uku").addEventListener("click", toggleUku);
-        document.getElementById("transpose-reset").addEventListener("click", () => {
-            currentTransposition = 0;
-            document.getElementById("transpose-uku").textContent = "Uku (G-dur)";
-            document.getElementById("transposition-val").textContent = "0";
-            renderLyrics();
-        });
+        document.getElementById("transpose-reset").addEventListener("click", resetTransposition);
+        
         document.getElementById("text-smaller").addEventListener("click", () => changeTextSize(-0.1));
         document.getElementById("text-bigger").addEventListener("click", () => changeTextSize(0.1));
+        
+        document.getElementById("auto-scroll-btn").addEventListener("click", toggleAutoScroll);
         
         searchInput.addEventListener("input", handleSearch);
         window.addEventListener("hashchange", loadSongFromHash);
 
         async function loadSongs() {
             try {
-                const res = await fetch("songs.json?" + new Date().getTime()); // Unikamy cashowania starego jsona
+                const res = await fetch("songs.json?" + new Date().getTime());
                 allSongs = await res.json();
                 
-                // Normalizacja tagów w całej bazie, aby uniknąć problemów
                 allSongs.forEach(s => {
                     let tagsArray = [];
-                    if (Array.isArray(s.tags)) {
-                        tagsArray = s.tags;
-                    } else if (typeof s.tags === 'string') {
-                        tagsArray = s.tags.split(',').map(t => t.trim());
-                    }
+                    if (Array.isArray(s.tags)) tagsArray = s.tags;
+                    else if (typeof s.tags === 'string') tagsArray = s.tags.split(',').map(t => t.trim());
                     s.tags = tagsArray.filter(t => t);
                 });
 
@@ -417,14 +409,12 @@
                 if (window.location.hash.length > 2) {
                     loadSongFromHash();
                 } else {
-                    // Losowanie piosenki startowej
                     const randomSong = allSongs[Math.floor(Math.random() * allSongs.length)];
                     displaySong(randomSong);
                     history.replaceState(null, "", `#/${encodeURIComponent(randomSong.title)}`);
                 }
             } catch (error) {
                 document.getElementById("welcome-screen").textContent = "Błąd pobierania bazy piosenek.";
-                console.error(error);
             }
         }
 
@@ -439,7 +429,6 @@
                 
                 const terms = query.split(" ");
                 
-                // Priorytet 1: Szukana fraza jest w tytule
                 const byTitle = allSongs.filter(s => {
                     const titleLower = s.title.toLowerCase();
                     return terms.every(term => titleLower.includes(term));
@@ -447,73 +436,51 @@
                 
                 const titleMatchNames = new Set(byTitle.map(s => s.title));
 
-                // Priorytet 2: Szukana fraza jest w tekście lub tagach
                 const byLyrics = allSongs.filter(s => {
-                    if (titleMatchNames.has(s.title)) return false; // Pomijamy te, co już znalazło w tytule
+                    if (titleMatchNames.has(s.title)) return false;
                     const textToSearch = ((s.tags || []).join(" ") + " " + s.lyrics.map(l => l.text).join(" ")).toLowerCase();
                     return terms.every(term => textToSearch.includes(term));
                 });
                 
                 const list = document.getElementById("song-list");
                 list.innerHTML = "";
-                
                 const results = [...byTitle, ...byLyrics];
                 
-                if (results.length === 0) {
-                    list.innerHTML = '<div class="empty">Nic nie znaleziono</div>';
-                } else {
-                    results.slice(0, 50).forEach(song => list.appendChild(createSongLink(song)));
-                }
+                if (results.length === 0) list.innerHTML = '<div class="empty">Nic nie znaleziono</div>';
+                else results.slice(0, 50).forEach(song => list.appendChild(createSongLink(song)));
             }
         }
 
         function renderDefaultSidebar() {
-            // 1. Propozycje losowe
             const randList = document.getElementById("random-list");
             randList.innerHTML = "";
-            [...allSongs].sort(() => 0.5 - Math.random()).slice(0, 5).forEach(s => {
-                randList.appendChild(createSongLink(s));
-            });
+            [...allSongs].sort(() => 0.5 - Math.random()).slice(0, 5).forEach(s => randList.appendChild(createSongLink(s)));
 
-            // 2. Najwyżej oceniane / Ulubione (odporne na puste wartości)
             const ratedList = document.getElementById("rated-list");
             ratedList.innerHTML = "";
-            
             let rated = allSongs.filter(s => parseInt(s.ratings_count || 0) > 0 || parseFloat(s.rating || 0) > 0);
             
             rated.sort((a, b) => {
-                let countA = parseInt(a.ratings_count || 1);
-                let countB = parseInt(b.ratings_count || 1);
-                let scoreA = parseFloat(a.ratings_sum || 0) / countA;
-                let scoreB = parseFloat(b.ratings_sum || 0) / countB;
-                
+                let scoreA = parseFloat(a.ratings_sum || 0) / parseInt(a.ratings_count || 1);
+                let scoreB = parseFloat(b.ratings_sum || 0) / parseInt(b.ratings_count || 1);
                 if (scoreB !== scoreA) return scoreB - scoreA;
                 return parseInt(b.ratings_count || 0) - parseInt(a.ratings_count || 0);
             });
             
             const topRated = rated.slice(0, 7);
-            if (topRated.length > 0) {
-                topRated.forEach(song => ratedList.appendChild(createSongLink(song)));
-            } else {
-                ratedList.innerHTML = '<div class="empty">Brak ocenionych utworów.</div>';
-            }
+            if (topRated.length > 0) topRated.forEach(song => ratedList.appendChild(createSongLink(song)));
+            else ratedList.innerHTML = '<div class="empty">Brak ocenionych utworów.</div>';
 
-            // 3. Kategorie (Tagi)
             const tagContainer = document.getElementById("random-tags");
             tagContainer.innerHTML = "";
             let allTags = new Set();
-            allSongs.forEach(s => {
-                s.tags.forEach(t => allTags.add(t));
-            });
+            allSongs.forEach(s => s.tags.forEach(t => allTags.add(t)));
             
             Array.from(allTags).sort().forEach(tag => {
                 const btn = document.createElement("button");
                 btn.className = "tag-button";
                 btn.textContent = tag;
-                btn.onclick = () => {
-                    searchInput.value = tag;
-                    handleSearch();
-                };
+                btn.onclick = () => { searchInput.value = tag; handleSearch(); };
                 tagContainer.appendChild(btn);
             });
         }
@@ -551,15 +518,9 @@
             a.addEventListener("click", (e) => {
                 e.preventDefault();
                 displaySong(song);
-                
-                // Zapisujemy w historii przeglądarki, żeby przycisk "Wstecz" na telefonie działał
                 history.pushState(null, "", `#/${encodeURIComponent(song.title)}`);
-
-                if (window.matchMedia("(max-width: 780px)").matches) {
-                    body.classList.add("sidebar-hidden");
-                }
+                if (window.matchMedia("(max-width: 780px)").matches) body.classList.add("sidebar-hidden");
             });
-
             return a;
         }
 
@@ -567,21 +528,19 @@
             if (!allSongs.length) return;
             const hash = decodeURIComponent(window.location.hash.slice(2));
             if (!hash) return;
-            
             const song = allSongs.find(s => s.title === hash);
             if (song) {
                 displaySong(song);
-                if (window.matchMedia("(max-width: 780px)").matches) {
-                    body.classList.add("sidebar-hidden");
-                }
+                if (window.matchMedia("(max-width: 780px)").matches) body.classList.add("sidebar-hidden");
             }
         }
 
         function displaySong(song) {
             currentSong = song;
-            currentTransposition = 0;
-            document.getElementById("transposition-val").textContent = "0";
-            document.getElementById("transpose-uku").textContent = "Uku (G-dur)";
+            
+            // Resetowanie stanów przy nowej piosence
+            resetTransposition();
+            stopAutoScroll();
             
             document.getElementById("welcome-screen").classList.add("hidden");
             document.getElementById("song-screen").classList.remove("hidden");
@@ -589,15 +548,13 @@
             
             document.getElementById("song-title").textContent = song.title;
             
-            // Informacja o ocenianiu
-            document.getElementById("info-box").classList.remove("hidden");
-
+            // Dyskretna ocena (dymek za pomocą atrybutu title w spanie)
             const metaDiv = document.getElementById("song-meta");
             if (parseInt(song.ratings_count || 0) > 0) {
                 const avg = (parseFloat(song.ratings_sum) / parseFloat(song.ratings_count)).toFixed(1);
-                metaDiv.textContent = `Ocena: ${avg}/5 (${song.ratings_count} głosów)`;
+                metaDiv.innerHTML = `<span class="rating-badge" title="Ocenianie piosenek dostępne jest tylko w wersji roboczej: spiewnik.streamlit.app">Ocena: ${avg}/5 (${song.ratings_count} głosów)</span>`;
             } else {
-                metaDiv.textContent = "";
+                metaDiv.innerHTML = "";
             }
 
             const tagsDiv = document.getElementById("song-tags");
@@ -606,11 +563,7 @@
                 const btn = document.createElement("button");
                 btn.className = "tag-button";
                 btn.textContent = tag;
-                btn.onclick = () => {
-                    searchInput.value = tag;
-                    handleSearch();
-                    body.classList.remove("sidebar-hidden");
-                };
+                btn.onclick = () => { searchInput.value = tag; handleSearch(); body.classList.remove("sidebar-hidden"); };
                 tagsDiv.appendChild(btn);
             });
 
@@ -631,9 +584,7 @@
                 
                 const lyricSpan = document.createElement("div");
                 lyricSpan.className = "lyric";
-                let textContent = line.text || " ";
-                lyricSpan.innerHTML = textContent.replace(/\n/g, "<br>");
-                
+                lyricSpan.innerHTML = (line.text || " ").replace(/\n/g, "<br>");
                 row.appendChild(lyricSpan);
 
                 if (line.chords && line.chords.length > 0) {
@@ -642,9 +593,44 @@
                     chordSpan.textContent = line.chords.map(c => transposeChordStr(c, currentTransposition)).join(" ");
                     row.appendChild(chordSpan);
                 }
-                
                 container.appendChild(row);
             });
+        }
+
+        // ---- LOGIKA TRANSPOZYCJI ----
+
+        function updateTranspositionUI() {
+            document.getElementById("transposition-val").textContent = currentTransposition > 0 ? `+${currentTransposition}` : currentTransposition;
+            document.getElementById("transpose-uku").textContent = isUkuMode ? "Gitara" : "Uku";
+        }
+
+        function changeTransposition(steps) {
+            if (!currentSong) return;
+            currentTransposition += steps;
+            updateTranspositionUI();
+            renderLyrics();
+        }
+
+        function toggleUku() {
+            if (!currentSong) return;
+            if (isUkuMode) {
+                // Jeśli byliśmy w trybie Uku, odejmujemy te 7 półtonów by wrócić
+                currentTransposition -= 7;
+                isUkuMode = false;
+            } else {
+                // Dodajemy 7 półtonów relatywnie do aktualnej wartości
+                currentTransposition += 7;
+                isUkuMode = true;
+            }
+            updateTranspositionUI();
+            renderLyrics();
+        }
+
+        function resetTransposition() {
+            currentTransposition = 0;
+            isUkuMode = false;
+            updateTranspositionUI();
+            if(currentSong) renderLyrics();
         }
 
         function transposeChordStr(chordStr, steps) {
@@ -655,7 +641,6 @@
             let base = match[1];
             let isMinor = base === base.toLowerCase();
             base = base.charAt(0).toUpperCase() + base.slice(1);
-            
             if (base === "B") base = "Ais";
             
             let val = noteValues[base];
@@ -667,35 +652,50 @@
             return (isMinor ? newBase.toLowerCase() : newBase) + match[2];
         }
 
-        function changeTransposition(steps) {
-            if (!currentSong) return;
-            currentTransposition += steps;
-            document.getElementById("transposition-val").textContent = currentTransposition > 0 ? `+${currentTransposition}` : currentTransposition;
-            
-            if (currentTransposition !== 7) {
-                 document.getElementById("transpose-uku").textContent = "Uku (G-dur)";
-            }
-            renderLyrics();
-        }
-
-        function toggleUku() {
-            const btn = document.getElementById("transpose-uku");
-            if (currentTransposition === 7) {
-                currentTransposition = 0;
-                btn.textContent = "Uku (G-dur)";
-            } else {
-                currentTransposition = 7;
-                btn.textContent = "Gitara (Reset)";
-            }
-            document.getElementById("transposition-val").textContent = currentTransposition > 0 ? `+${currentTransposition}` : currentTransposition;
-            renderLyrics();
-        }
+        // ---- LOGIKA ROZMIARU TEKSTU ----
 
         function changeTextSize(delta) {
             songFontSize = Math.max(0.8, Math.min(2.0, songFontSize + delta));
             chordFontSize = Math.max(1.0, Math.min(2.5, chordFontSize + delta * 1.3));
             document.documentElement.style.setProperty("--song-font-size", `${songFontSize}rem`);
             document.documentElement.style.setProperty("--chord-font-size", `${chordFontSize}rem`);
+        }
+
+        // ---- LOGIKA AUTOSCROLLINGU ----
+
+        function toggleAutoScroll() {
+            const btn = document.getElementById("auto-scroll-btn");
+            scrollSpeedState = (scrollSpeedState + 1) % 4; // 0, 1, 2, 3
+
+            if (scrollSpeedState === 0) {
+                stopAutoScroll();
+            } else {
+                btn.textContent = `⏸ Prędkość x${scrollSpeedState}`;
+                if (scrollSpeedState === 1) { // Uruchamia pętlę tylko przy pierwszym włączeniu
+                    autoScrollLoop();
+                }
+            }
+        }
+
+        function stopAutoScroll() {
+            scrollSpeedState = 0;
+            document.getElementById("auto-scroll-btn").textContent = "▶ Przewijaj";
+            cancelAnimationFrame(scrollAnimationId);
+        }
+
+        function autoScrollLoop() {
+            if (scrollSpeedState > 0) {
+                const contentArea = document.getElementById("content-area");
+                
+                // Dostosowanie prędkości: 0.3, 0.7, lub 1.2 pixela na klatkę
+                let pixelStep = 0;
+                if(scrollSpeedState === 1) pixelStep = 0.3;
+                else if(scrollSpeedState === 2) pixelStep = 0.7;
+                else if(scrollSpeedState === 3) pixelStep = 1.2;
+
+                contentArea.scrollTop += pixelStep;
+                scrollAnimationId = requestAnimationFrame(autoScrollLoop);
+            }
         }
 
         loadSongs();
