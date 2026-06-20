@@ -66,7 +66,6 @@
             width: 100%;
         }
 
-        /* Poprawione ukrywanie panelu bocznego */
         .sidebar {
             order: 2;
             width: 330px;
@@ -79,7 +78,7 @@
         }
 
         body.sidebar-hidden .sidebar {
-            margin-right: -330px; /* Całkowicie zwija przestrzeń na desktopie */
+            margin-right: -330px;
             transform: translateX(100%);
         }
 
@@ -154,14 +153,12 @@
             gap: 5px;
         }
 
-        /* Przewijanie listy wyników do samego dołu */
         #search-results-section {
             flex: 1;
             overflow-y: auto;
             padding-bottom: 20px;
         }
 
-        /* Domyślne sekcje (Ulubione, Tagi) */
         #default-sections {
             flex: 1;
             overflow-y: auto;
@@ -235,9 +232,25 @@
         .tags .tag-button { border-color: rgba(226, 75, 75, 0.4); color: var(--accent); border-radius: 15px; }
 
         .song-body { font-size: var(--song-font-size); line-height: 1.3; }
-        .song-line { display: flex; gap: 15px; padding: 3px 0; border-bottom: 1px solid color-mix(in srgb, var(--border) 30%, transparent); }
+        
+        /* GWARANCJA POPRAWNEGO ŁAMANIA LINII */
+        .song-line { 
+            display: flex; 
+            width: 100%;
+            align-items: baseline;
+            gap: 15px; 
+            padding: 4px 0; 
+            border-bottom: 1px solid color-mix(in srgb, var(--border) 20%, transparent); 
+        }
+        
         .chords { color: var(--accent); font-family: monospace; font-size: var(--chord-font-size); font-weight: 800; }
-        .lyric { color: var(--text); white-space: pre-wrap; flex: 1; }
+        .lyric { 
+            color: var(--text); 
+            white-space: pre-wrap; 
+            word-break: break-word;
+            flex: 1; 
+            min-height: 1.2em; /* Zabezpiecza puste linijki przed zniknięciem */
+        }
 
         .empty { color: var(--muted); font-size: 0.9rem; font-style: italic; }
         .hidden { display: none !important; }
@@ -266,6 +279,7 @@
                     <button id="transpose-down" class="small-button">-1</button>
                     <span id="transposition-val" class="meter">0</span>
                     <button id="transpose-up" class="small-button">+1</button>
+                    <button id="transpose-uku" class="small-button" title="Transpozycja Gitara -> Ukulele">Uku +5</button>
                     <button id="transpose-reset" class="small-button">Reset</button>
                 </div>
                 <div class="topbar-divider"></div>
@@ -354,6 +368,7 @@
         });
         document.getElementById("transpose-down").addEventListener("click", () => changeTransposition(-1));
         document.getElementById("transpose-up").addEventListener("click", () => changeTransposition(1));
+        document.getElementById("transpose-uku").addEventListener("click", () => changeTransposition(5));
         document.getElementById("transpose-reset").addEventListener("click", () => changeTransposition(-currentTransposition));
         document.getElementById("text-smaller").addEventListener("click", () => changeTextSize(-0.1));
         document.getElementById("text-bigger").addEventListener("click", () => changeTextSize(0.1));
@@ -364,7 +379,8 @@
         // Ładowanie bazy
         async function loadSongs() {
             try {
-                const response = await fetch("songs.json");
+                // Dodano cache-busting, by na telefonach szybciej łapało nową wersję
+                const response = await fetch("songs.json?" + new Date().getTime());
                 if (!response.ok) throw new Error("Nie znaleziono bazy");
                 allSongs = await response.json();
                 
@@ -404,30 +420,28 @@
             }
         }
 
-        // Renderowanie domyślnego panelu bocznego
+        // Renderowanie domyślnego panelu bocznego - Z poprawionym filtrowaniem Ocen
         function renderDefaultSidebar() {
-            // 1. Najwyżej oceniane / Ulubione
             const ratedList = document.getElementById("rated-list");
             ratedList.innerHTML = "";
-            let rated = allSongs.filter(s => s.ratings_count && s.ratings_count > 0);
             
-            // Sortowanie po średniej, potem po liczbie głosów
+            // Poprawione czytanie wartości tekstowych jako liczb
+            let rated = allSongs.filter(s => parseInt(s.ratings_count || 0) > 0);
+            
             rated.sort((a, b) => {
-                let scoreA = a.ratings_sum / a.ratings_count;
-                let scoreB = b.ratings_sum / b.ratings_count;
+                let scoreA = parseFloat(a.ratings_sum || 0) / parseFloat(a.ratings_count || 1);
+                let scoreB = parseFloat(b.ratings_sum || 0) / parseFloat(b.ratings_count || 1);
                 if (scoreB !== scoreA) return scoreB - scoreA;
-                return b.ratings_count - a.ratings_count;
+                return parseInt(b.ratings_count || 0) - parseInt(a.ratings_count || 0);
             });
             
-            // Pokaż 7 najlepszych
             const topRated = rated.slice(0, 7);
             if (topRated.length > 0) {
                 topRated.forEach(song => ratedList.appendChild(createSongLink(song)));
             } else {
-                ratedList.innerHTML = '<div class="empty">Brak ocenionych utworów</div>';
+                ratedList.innerHTML = '<div class="empty">Brak ocenionych utworów.</div>';
             }
 
-            // 2. Chmura tagów
             const tagContainer = document.getElementById("random-tags");
             tagContainer.innerHTML = "";
             let allTags = new Set();
@@ -438,14 +452,13 @@
                 btn.className = "tag-button";
                 btn.textContent = tag;
                 btn.onclick = () => {
-                    searchInput.value = tag; // Wpisz tag do wyszukiwarki
-                    handleSearch(); // Uruchom wyszukiwanie
+                    searchInput.value = tag;
+                    handleSearch();
                 };
                 tagContainer.appendChild(btn);
             });
         }
 
-        // Renderowanie podobnych utworów
         function renderSameTagList() {
             const section = document.getElementById("same-tag-section");
             const list = document.getElementById("same-tag-list");
@@ -464,7 +477,6 @@
 
             if (related.length > 0) {
                 section.classList.remove("hidden");
-                // Losujemy 5 podobnych
                 related.sort(() => 0.5 - Math.random()).slice(0, 5).forEach(s => list.appendChild(createSongLink(s)));
             } else {
                 section.classList.add("hidden");
@@ -504,16 +516,14 @@
             
             document.getElementById("song-title").textContent = song.title;
             
-            // Meta (Oceny)
             const metaDiv = document.getElementById("song-meta");
-            if (song.ratings_count && song.ratings_count > 0) {
-                const avg = (song.ratings_sum / song.ratings_count).toFixed(1);
+            if (parseInt(song.ratings_count || 0) > 0) {
+                const avg = (parseFloat(song.ratings_sum) / parseFloat(song.ratings_count)).toFixed(1);
                 metaDiv.textContent = `Ocena: ${avg}/5 (${song.ratings_count} głosów)`;
             } else {
                 metaDiv.textContent = "";
             }
 
-            // Tagi
             const tagsDiv = document.getElementById("song-tags");
             tagsDiv.innerHTML = "";
             (song.tags || []).forEach(tag => {
@@ -531,7 +541,6 @@
             renderLyrics();
             renderSameTagList();
             
-            // Odśwież zaznaczenie w wyszukiwarce/listach
             document.querySelectorAll(".song-link").forEach(link => {
                 link.classList.toggle("active", link.textContent === song.title);
             });
@@ -546,7 +555,9 @@
                 
                 const lyricSpan = document.createElement("div");
                 lyricSpan.className = "lyric";
-                lyricSpan.textContent = line.text || " ";
+                // Używamy innerHTML i zamieniamy ewentualne \n na twarde breaki dla bezpieczeństwa formatowania
+                let textContent = line.text || " ";
+                lyricSpan.innerHTML = textContent.replace(/\n/g, "<br>");
                 
                 row.appendChild(lyricSpan);
 
@@ -561,7 +572,6 @@
             });
         }
 
-        // Prosty transpozytor oparty na Twojej wcześniejszej logice
         function transposeChordStr(chordStr, steps) {
             if (steps === 0) return chordStr;
             const match = chordStr.match(/^([A-Ha-h][#bis]??)(.*)$/);
@@ -569,9 +579,9 @@
             
             let base = match[1];
             let isMinor = base === base.toLowerCase();
-            base = base.charAt(0).toUpperCase() + base.slice(1); // Normalizuj do wielkiej litery do wyszukiwania
+            base = base.charAt(0).toUpperCase() + base.slice(1);
             
-            if (base === "B") base = "Ais"; // Ujednolicenie polskiego zapisu
+            if (base === "B") base = "Ais";
             
             let val = noteValues[base];
             if (val === undefined) return chordStr;
