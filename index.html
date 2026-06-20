@@ -618,11 +618,11 @@
         function toggleInstrument() {
             const btn = document.getElementById("transpose-toggle");
             // Uku +5 to standardowa transpozycja z Gitary na Ukulele
-            if (currentTransposition === 5) {
+            if (currentTransposition === 7) {
                 currentTransposition = 0;
                 btn.textContent = "Uku (Gitara)";
             } else {
-                currentTransposition = 5;
+                currentTransposition = 7;
                 btn.textContent = "Gitara (Ukulele)";
             }
             renderLyrics();
