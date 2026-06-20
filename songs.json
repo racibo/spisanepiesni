@@ -19526,26 +19526,27 @@
     "title": "Helodore Babe",
     "lyrics": [
       {
-        "text": "Josie’s laughing seeing mother in the grave d7 C B d7",
+        "text": "Josie’s laughing seeing mother in the grave",
         "chords": [
+          "d7",
+          "C",
+          "B",
+          "d7",
           "C",
           "B"
         ]
       },
       {
         "text": "Josie’s screaming cause daddy holds her during storms",
-        "chords": []
-      },
-      {
-        "text": "",
         "chords": [
           "d",
           "C"
         ]
       },
       {
-        "text": "Helodore Babe d7",
+        "text": "Helodore Babe",
         "chords": [
+          "d7",
           "C",
           "G",
           "B"
@@ -19588,67 +19589,11 @@
         "chords": []
       },
       {
-        "text": "Musli",
+        "text": "",
         "chords": []
       },
       {
-        "text": "Unikaj scenariuszy",
-        "chords": [
-          "e",
-          "A"
-        ]
-      },
-      {
-        "text": "One zwiodą cię one zwiodą cię",
-        "chords": [
-          "e"
-        ]
-      },
-      {
-        "text": "Nie słuchaj złych podszeptów",
-        "chords": [
-          "e",
-          "A"
-        ]
-      },
-      {
-        "text": "Głupcem staniesz się głupcem staniesz się",
-        "chords": [
-          "e"
-        ]
-      },
-      {
-        "text": "Panem swym bądź C D H7",
-        "chords": []
-      },
-      {
-        "text": "Własny zbieraj plon, własny zbieraj plon",
-        "chords": [
-          "e"
-        ]
-      },
-      {
-        "text": "Nie wstydź się upadków",
-        "chords": []
-      },
-      {
-        "text": "Zahartują cię, zahartują cię",
-        "chords": []
-      },
-      {
-        "text": "Pozbądź się poczucia winy",
-        "chords": []
-      },
-      {
-        "text": "Jeszcze nie jest czas, jeszcze nie jest czas",
-        "chords": []
-      },
-      {
-        "text": "Panem swym bądź",
-        "chords": []
-      },
-      {
-        "text": "Własny zbieraj plon, własny zbieraj plon",
+        "text": "",
         "chords": []
       }
     ],
@@ -53518,6 +53463,87 @@
       },
       {
         "text": "Wcale świata nie rozumiem",
+        "chords": []
+      }
+    ],
+    "ratings_sum": 0,
+    "ratings_count": 0,
+    "tags": []
+  },
+  {
+    "title": "Musli (Hey)",
+    "lyrics": [
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "Unikaj scenariuszy",
+        "chords": [
+          "e",
+          "A"
+        ]
+      },
+      {
+        "text": "One zwiodą cię one zwiodą cię",
+        "chords": [
+          "e"
+        ]
+      },
+      {
+        "text": "Nie słuchaj złych podszeptów",
+        "chords": [
+          "e",
+          "A"
+        ]
+      },
+      {
+        "text": "Głupcem staniesz się głupcem staniesz się",
+        "chords": [
+          "e"
+        ]
+      },
+      {
+        "text": "Panem swym bądź",
+        "chords": [
+          "C",
+          "D",
+          "H7",
+          "|"
+        ]
+      },
+      {
+        "text": "Własny zbieraj plon, własny zbieraj plon",
+        "chords": [
+          "e"
+        ]
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "Nie wstydź się upadków",
+        "chords": []
+      },
+      {
+        "text": "Zahartują cię, zahartują cię",
+        "chords": []
+      },
+      {
+        "text": "Pozbądź się poczucia winy",
+        "chords": []
+      },
+      {
+        "text": "Jeszcze nie jest czas, jeszcze nie jest czas",
+        "chords": []
+      },
+      {
+        "text": "Panem swym bądź",
+        "chords": []
+      },
+      {
+        "text": "Własny zbieraj plon, własny zbieraj plon",
         "chords": []
       }
     ],
