@@ -5260,8 +5260,11 @@
     "title": "Ballada o dwóch siostrach",
     "lyrics": [
       {
-        "text": "Były dwie siostry: Noc i Śmierć, Śmierć większa a Noc mniejsza, aEaaEa",
-        "chords": []
+        "text": "Były dwie siostry: Noc i Śmierć, Śmierć większa a Noc mniejsza,",
+        "chords": [
+          "aEaaEa",
+          "|"
+        ]
       },
       {
         "text": "Noc była piękna jak sen, a Śmierć,",
@@ -5280,8 +5283,14 @@
         ]
       },
       {
-        "text": "Noc była piękna jak sen, a Śmierć, a F G H7",
-        "chords": []
+        "text": "Noc była piękna jak sen, a Śmierć,",
+        "chords": [
+          "a",
+          "F",
+          "G",
+          "H7",
+          "|"
+        ]
       },
       {
         "text": "Śmierć była jeszcze piękniejsza –",
@@ -32728,12 +32737,6 @@
       {
         "text": "No dobra może przesadziłem,",
         "chords": [
-          "A",
-          "E",
-          "D",
-          "A",
-          "fis",
-          "E",
           "A"
         ]
       },
@@ -32747,11 +32750,16 @@
       },
       {
         "text": "Że niby co się dzieje ze mną",
-        "chords": []
+        "chords": [
+          "E"
+        ]
       },
       {
         "text": "I mooże starczy bym się zdrzemnąął",
-        "chords": []
+        "chords": [
+          "D",
+          "A"
+        ]
       },
       {
         "text": "A jutro znajdę w sobie siłę - I wolę -",
@@ -32759,40 +32767,57 @@
       },
       {
         "text": "Ubiorę się, ogolę ii spokojnie wrócę do przerwanej gry",
-        "chords": []
+        "chords": [
+          "E"
+        ]
       },
       {
         "text": "I nawet znajdę w tym - przyjemność",
-        "chords": []
+        "chords": [
+          "D",
+          "A"
+        ]
       },
       {
         "text": "",
         "chords": []
       },
       {
-        "text": "O Panie, wybacz mi, no wiem",
+        "text": "O Panie, wybacz mi, no wiem Znowu czepiam się",
         "chords": [
           "A",
-          "fis,",
-          "E,",
-          "A,",
+          "E"
+        ]
+      },
+      {
+        "text": "Nawet nie chodzi mi o sens - jest czy nie",
+        "chords": [
+          "A",
           "D",
-          "E;",
+          "E"
+        ]
+      },
+      {
+        "text": "Ale w tym cała bida, że go nie za bardzo widać",
+        "chords": [
           "A",
           "E",
           "A"
         ]
       },
       {
-        "text": "Znowu czepiam się Nawet nie chodzi mi o sens - jest czy nie",
-        "chords": []
-      },
-      {
-        "text": "Ale w tym cała bida, że go nie za bardzo widać",
-        "chords": []
-      },
-      {
         "text": "",
+        "chords": [
+          "A",
+          "E",
+          "D",
+          "A",
+          "fis",
+          "E"
+        ]
+      },
+      {
+        "text": "A",
         "chords": []
       },
       {
