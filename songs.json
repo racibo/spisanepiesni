@@ -20914,8 +20914,12 @@
         ]
       },
       {
-        "text": "Może pragnę cię bardziej, niż ktokolwiek kiedyś pragnął cię, a7 a6",
-        "chords": []
+        "text": "Może pragnę cię bardziej, niż ktokolwiek kiedyś pragnął cię,",
+        "chords": [
+          "a7",
+          "a6",
+          "|"
+        ]
       },
       {
         "text": "Może jesteś kimś kim łatwiej być,",
@@ -20924,16 +20928,30 @@
         ]
       },
       {
-        "text": "Może głuchym milczeniem, kiedy pytam dokąd iść, a7 a6",
-        "chords": []
+        "text": "Może głuchym milczeniem, kiedy pytam dokąd iść,",
+        "chords": [
+          "a7",
+          "a6",
+          "|"
+        ]
       },
       {
-        "text": "I dokładnie tak, tak smakuje ten lęk i strach, C7+ H C7+",
-        "chords": []
+        "text": "I dokładnie tak, tak smakuje ten lęk i strach,",
+        "chords": [
+          "C7+",
+          "H",
+          "C7+",
+          "|"
+        ]
       },
       {
-        "text": "A gdy skończy się dzień, tak spokojnie mi odpowiesz... H C7+ D6",
-        "chords": []
+        "text": "A gdy skończy się dzień, tak spokojnie mi odpowiesz...",
+        "chords": [
+          "H",
+          "C7+",
+          "D6",
+          "|"
+        ]
       },
       {
         "text": "Mogę zwątpić w to co dzieje się,",
@@ -20942,8 +20960,11 @@
         ]
       },
       {
-        "text": "Kiedy każesz mi dążyć, tam gdzie jest niepewny cel. a7",
-        "chords": []
+        "text": "Kiedy każesz mi dążyć, tam gdzie jest niepewny cel.",
+        "chords": [
+          "a7",
+          "|"
+        ]
       },
       {
         "text": "Może nie chcę w taki sposób żyć,",
@@ -20952,8 +20973,12 @@
         ]
       },
       {
-        "text": "Nie chcę, być twoim grzechem, który wolisz z siebie zmyć. a7 a6",
-        "chords": []
+        "text": "Nie chcę, być twoim grzechem, który wolisz z siebie zmyć.",
+        "chords": [
+          "a7",
+          "a6",
+          "|"
+        ]
       },
       {
         "text": "I dokładnie tak, tak smakuje ten lęk i strach,",
@@ -20964,8 +20989,13 @@
         "chords": []
       },
       {
-        "text": "Że to co mam, nie wystarczy ci, e D a7",
-        "chords": []
+        "text": "Że to co mam, nie wystarczy ci,",
+        "chords": [
+          "e",
+          "D",
+          "a7",
+          "|"
+        ]
       },
       {
         "text": "To co mam, nie mogłam dłużej kryć",
