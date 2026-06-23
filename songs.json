@@ -10459,7 +10459,12 @@
     "lyrics": [
       {
         "text": "",
+        "chords": []
+      },
+      {
+        "text": "Nie wiem jak mam to zrobić, ona zawstydza mnie",
         "chords": [
+          "|",
           "E",
           "A",
           "E",
@@ -10468,12 +10473,9 @@
         ]
       },
       {
-        "text": "Nie wiem jak mam to zrobić, ona zawstydza mnie",
-        "chords": []
-      },
-      {
-        "text": "",
+        "text": "Strach ma tak wielkie oczy, wokół ciemno jest",
         "chords": [
+          "|",
           "E",
           "A",
           "E",
@@ -10481,12 +10483,9 @@
         ]
       },
       {
-        "text": "Strach ma tak wielkie oczy, wokół ciemno jest",
-        "chords": []
-      },
-      {
-        "text": "",
+        "text": "Czuje się jak Beniamin i udaje, ze śpię",
         "chords": [
+          "|",
           "E",
           "A",
           "E",
@@ -10495,12 +10494,9 @@
         ]
       },
       {
-        "text": "Czuje się jak Beniamin i udaje, ze śpię",
-        "chords": []
-      },
-      {
-        "text": "",
+        "text": "Może walne kilka drinków, chyba nakręcą mnie, nakręcą mnie",
         "chords": [
+          "|",
           "E",
           "fis",
           "A",
@@ -10512,7 +10508,7 @@
         ]
       },
       {
-        "text": "Może walne kilka drinków, chyba nakręcą mnie, nakręcą mnie",
+        "text": "",
         "chords": []
       },
       {
@@ -10534,8 +10530,23 @@
         ]
       },
       {
-        "text": "Czerwony jak cegła, rozgrzany jak piec / D A E D A E E7 / x2",
+        "text": "",
         "chords": []
+      },
+      {
+        "text": "Czerwony jak cegła, rozgrzany jak piec /",
+        "chords": [
+          "D",
+          "A",
+          "E",
+          "D",
+          "A",
+          "E",
+          "E7",
+          "/",
+          "x2",
+          "|"
+        ]
       },
       {
         "text": "Musze mieć, musze ja mieć /",
@@ -10562,6 +10573,10 @@
         "chords": []
       },
       {
+        "text": "",
+        "chords": []
+      },
+      {
         "text": "Nie wiem jak to się stało, ona chyba już śpi",
         "chords": []
       },
@@ -10584,7 +10599,9 @@
     ],
     "ratings_sum": 0,
     "ratings_count": 0,
-    "tags": []
+    "tags": [
+      "1985"
+    ]
   },
   {
     "title": "Naiwne pytania",
@@ -19561,7 +19578,9 @@
     ],
     "ratings_sum": 0,
     "ratings_count": 0,
-    "tags": []
+    "tags": [
+      "1993"
+    ]
   },
   {
     "title": "Helodore Babe",
@@ -27049,7 +27068,7 @@
     "title": "Marsz zdechlaków",
     "lyrics": [
       {
-        "text": "Dwadzieścia fajek w mig i do kawy rum, rum, rum... a G F a Dwie czyste, gorzkiej łyk - a ty doktorku spójrz, spójrz, spójrz. Coś szpetnie w piersiach gra - cóż za odkrywczy fakt a E7 W karetkach znają nas - a każdy jak brat, brat, brat.",
+        "text": "Dwadzieścia fajek w mig i do kawy rum, rum, rum...",
         "chords": [
           "a",
           "G",
@@ -27058,29 +27077,141 @@
         ]
       },
       {
-        "text": "Twych nerek dobry los nie wróci do łask, łask, łask. Zatkanych tętnic splot już stracił swój blask, blask, blask Serce ma dziwny dźwięk - sam nie wiem, co to jest? Wszystko to głupstwo, więc - żyjesz fest, fest, fest.",
+        "text": "Dwie czyste, gorzkiej łyk - a ty doktorku spójrz, spójrz, spójrz.",
         "chords": []
       },
       {
-        "text": "Cyrhoza, tromboza, gruźliczy kaszel, a G C tuberkuloza, tak - to wszystko nasze d a E7 a Neuroza, skleroza, skrzypienie w plerach, paradontoza, nie!, no to już afera.",
-        "chords": []
-      },
-      {
-        "text": "Ale w głębi naszych ciał zdrowy mieszka duch, a G C A więc smutki - cześć, ju hu, hu, hu, hu. d a E7",
+        "text": "Coś szpetnie w piersiach gra - cóż za odkrywczy fakt",
         "chords": [
+          "a",
+          "E7"
+        ]
+      },
+      {
+        "text": "W karetkach znają nas - a każdy jak brat, brat, brat.",
+        "chords": [
+          "a",
+          "G",
+          "F",
           "a"
         ]
       },
       {
-        "text": "Już zawał szczerzy kły za nami o krok, krok, krok, Zdechlaki zamknąć drzwi, bo wredny ma wzrok, wzrok, wzrok. Adresy wasze zna i skryć się próżny trud. Odnajdzie was raz-dwa i już nogami wprzód, wprzód, wprzód.",
+        "text": "",
         "chords": []
       },
       {
-        "text": "W szpitalny wbiją strój, wesoło jak w Zoo, Zoo, Zoo. Doktorów mądrych stu obejrzy przez szkło, szkło, szkło. Przez naszych trzewi treść skalpela cięcia trzy Wesołą słychać pieśń, co tak znajomo brzmi, brzmi, brzmi.",
+        "text": "Twych nerek dobry los nie wróci do łask, łask, łask.",
         "chords": []
       },
       {
-        "text": "Cyrhoza, tromboza, gruźliczy kaszel, tuberkuloza, tak to wszystko nasze Neuroza, skleroza, skrzypienie w plerach, paradontoza, nie, no to już afera",
+        "text": "Zatkanych tętnic splot już stracił swój blask, blask, blask",
+        "chords": []
+      },
+      {
+        "text": "Serce ma dziwny dźwięk - sam nie wiem, co to jest?",
+        "chords": []
+      },
+      {
+        "text": "Wszystko to głupstwo, więc - żyjesz fest, fest, fest.",
+        "chords": []
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "Cyrhoza, tromboza, gruźliczy kaszel,",
+        "chords": [
+          "a",
+          "G",
+          "C"
+        ]
+      },
+      {
+        "text": "tuberkuloza, tak - to wszystko nasze",
+        "chords": [
+          "d",
+          "a",
+          "E7",
+          "a"
+        ]
+      },
+      {
+        "text": "Neuroza, skleroza, skrzypienie w plerach,",
+        "chords": []
+      },
+      {
+        "text": "paradontoza, nie!, no to już afera.",
+        "chords": []
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "Ale w głębi naszych ciał zdrowy mieszka duch,",
+        "chords": [
+          "a",
+          "G",
+          "C"
+        ]
+      },
+      {
+        "text": "A więc smutki - cześć, ju hu, hu, hu, hu.",
+        "chords": [
+          "d",
+          "a",
+          "E7",
+          "a"
+        ]
+      },
+      {
+        "text": "Już zawał szczerzy kły za nami o krok, krok, krok,",
+        "chords": []
+      },
+      {
+        "text": "Zdechlaki zamknąć drzwi, bo wredny ma wzrok, wzrok, wzrok.",
+        "chords": []
+      },
+      {
+        "text": "Adresy wasze zna i skryć się próżny trud.",
+        "chords": []
+      },
+      {
+        "text": "Odnajdzie was raz-dwa i już nogami wprzód, wprzód, wprzód.",
+        "chords": []
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "W szpitalny wbiją strój, wesoło jak w Zoo, Zoo, Zoo.",
+        "chords": []
+      },
+      {
+        "text": "Doktorów mądrych stu obejrzy przez szkło, szkło, szkło.",
+        "chords": []
+      },
+      {
+        "text": "Przez naszych trzewi treść skalpela cięcia trzy",
+        "chords": []
+      },
+      {
+        "text": "Wesołą słychać pieśń, co tak znajomo brzmi, brzmi, brzmi.",
+        "chords": []
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "Cyrhoza, tromboza, gruźliczy kaszel, tuberkuloza, tak to wszystko nasze",
+        "chords": []
+      },
+      {
+        "text": "Neuroza, skleroza, skrzypienie w plerach, paradontoza, nie, no to już afera",
         "chords": []
       },
       {
@@ -27094,7 +27225,9 @@
     ],
     "ratings_sum": 0,
     "ratings_count": 0,
-    "tags": []
+    "tags": [
+      "Nohavica"
+    ]
   },
   {
     "title": "Pastuch",
