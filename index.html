@@ -437,6 +437,40 @@
                 box-shadow: -5px 0 20px var(--shadow);
             }
         }
+        /* --- STOPKA --- */
+        .app-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(16, 17, 20, 0.88);
+            color: #666;
+            font-size: 10px;
+            padding: 3px 10px;
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            align-items: center;
+            backdrop-filter: blur(4px);
+            pointer-events: none;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .app-footer a {
+            color: #7cb9f0;
+            text-decoration: underline;
+            pointer-events: auto;
+        }
+        .app-footer .support-link {
+            color: #fff;
+            background: #28a745;
+            padding: 1px 8px;
+            border-radius: 3px;
+            text-decoration: none;
+            font-weight: 600;
+            pointer-events: auto;
+        }
+        .app-footer .support-link:hover { background: #218838; }
     </style>
     <script>
 //---------------------------------------------------------------------
@@ -3411,5 +3445,10 @@ var qrcode = function() {
 
         loadSongs();
     </script>
+    <div class="app-footer">
+        <span>Jakub Raciborski &copy; 2026</span>
+        <a href="https://racibo.pl" target="_blank">racibo.pl</a>
+        <a href="https://buy.stripe.com/5kA3f2e5A1vsaDmcMM" target="_blank" class="support-link">💛 Wesprzyj</a>
+    </div>
 </body>
 </html>
