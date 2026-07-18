@@ -54818,7 +54818,12 @@
     "lyrics": [
       {
         "text": "Byłem w Gdańsku nad Motławą, dalej razem go",
-        "chords": []
+        "chords": [
+          "D",
+          "G",
+          "A",
+          "D"
+        ]
       },
       {
         "text": "W kawiarence z dobrą kawą, dalej razem go",
@@ -54826,11 +54831,22 @@
       },
       {
         "text": "Byłem w Gdańsku nad Motławą, w kawiarence z dobrą kawą,",
-        "chords": []
+        "chords": [
+          "D",
+          "G",
+          "D",
+          "A"
+        ]
       },
       {
         "text": "dalej razem dalej razem dalej razem go",
-        "chords": []
+        "chords": [
+          "D",
+          "G",
+          "D",
+          "A",
+          "G"
+        ]
       },
       {
         "text": "",
