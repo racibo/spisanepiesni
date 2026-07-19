@@ -38872,6 +38872,8 @@
         "text": "Raz pewien pan odwiedził stan",
         "chords": [
           "G",
+          "D",
+          "G",
           "h"
         ]
       },
@@ -38879,20 +38881,37 @@
         "text": "Wskazujący na co nieco gram",
         "chords": [
           "C",
-          "D7"
+          "maj7",
+          "a7",
+          "D"
         ]
       },
       {
         "text": "I zamiast spać choć nie mógł wstać",
-        "chords": []
+        "chords": [
+          "G",
+          "D",
+          "G",
+          "h"
+        ]
       },
       {
         "text": "Na tak zwanych czułych strunach zaczął grać",
+        "chords": [
+          "C",
+          "maj7",
+          "A",
+          "H"
+        ]
+      },
+      {
+        "text": "",
         "chords": []
       },
       {
         "text": "Pani dzbanem jest upojnym na mój gust",
         "chords": [
+          "a7",
           "H7",
           "e7"
         ]
@@ -38907,16 +38926,21 @@
       {
         "text": "Pni mami jak Chopin",
         "chords": [
-          "a"
+          "a7",
+          "A"
         ]
       },
       {
         "text": "Jak dynamit czai się",
-        "chords": []
+        "chords": [
+          "Cmaj9",
+          "A7"
+        ]
       },
       {
         "text": "Aż zapali się gorąca we mnie krew",
         "chords": [
+          "G",
           "H7"
         ]
       },
@@ -38931,26 +38955,43 @@
       {
         "text": "Słowa wolne są od cła",
         "chords": [
-          "G",
+          "Cmaj7",
           "H7",
           "e"
         ]
       },
       {
         "text": "Bzdury bez cenzury mam",
-        "chords": []
+        "chords": [
+          "Cmaj7",
+          "H7",
+          "e",
+          "-",
+          "d7",
+          "G"
+        ]
       },
       {
         "text": "Śmieję się przez sen",
-        "chords": []
+        "chords": [
+          "Cmaj7",
+          "H7"
+        ]
       },
       {
         "text": "Szaleństwo lubi mnie",
-        "chords": []
+        "chords": [
+          "12",
+          "A"
+        ]
       },
       {
         "text": "Nad ranem zwykle tańczyć chcę",
-        "chords": []
+        "chords": [
+          "Gis",
+          "G",
+          "Cmaj7"
+        ]
       },
       {
         "text": "",
