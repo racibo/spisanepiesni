@@ -25484,23 +25484,9 @@
     "title": "Ráda se miluje",
     "lyrics": [
       {
-        "text": "",
+        "text": "Ráda se miluje, ráda jí, ráda si jenom tak zpívá,",
         "chords": [
           "a",
-          "G",
-          "C",
-          "F",
-          "e",
-          "a"
-        ]
-      },
-      {
-        "text": "Ráda se miluje, ráda jí, ráda si jenom tak zpívá,",
-        "chords": []
-      },
-      {
-        "text": "",
-        "chords": [
           "G",
           "C",
           "F",
@@ -25510,10 +25496,16 @@
       },
       {
         "text": "vrabci se na plotě hádají, kolik že času jí zbývá.",
-        "chords": []
+        "chords": [
+          "G",
+          "C",
+          "F",
+          "e",
+          "a"
+        ]
       },
       {
-        "text": "",
+        "text": "Než vítr dostrká k útesu tu její legrační bárku",
         "chords": [
           "F",
           "C",
@@ -25523,11 +25515,7 @@
         ]
       },
       {
-        "text": "Než vítr dostrká k útesu tu její legrační bárku",
-        "chords": []
-      },
-      {
-        "text": "",
+        "text": "a Pámbu si ve svým notesu udělá jen další čárku.",
         "chords": [
           "a",
           "G",
@@ -25538,7 +25526,7 @@
         ]
       },
       {
-        "text": "a Pámbu si ve svým notesu udělá jen další čárku.",
+        "text": "",
         "chords": []
       },
       {
@@ -25551,6 +25539,10 @@
       },
       {
         "text": "že naše duše nás přežijí v jinačí tělesný schránce.",
+        "chords": []
+      },
+      {
+        "text": "",
         "chords": []
       },
       {
@@ -25570,7 +25562,9 @@
         "chords": []
       }
     ],
-    "tags": []
+    "tags": [
+      "plihal czeskie"
+    ]
   },
   {
     "title": "Dokąd się śpiewa",
