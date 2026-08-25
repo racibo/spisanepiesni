@@ -9730,11 +9730,14 @@
     ]
   },
   {
-    "title": "W zakamarkach naszych dusz.        a G",
+    "title": "W zakamarkach naszych dusz",
     "lyrics": [
       {
         "text": "W zakamarkach naszych dusz,",
-        "chords": []
+        "chords": [
+          "h",
+          "A"
+        ]
       },
       {
         "text": "Gdzieś na samym, samym dnie,",
@@ -9745,7 +9748,11 @@
         "chords": []
       },
       {
-        "text": "Budzi się nasze ja, nasze ja budzi się.",
+        "text": "Budzi się nasze ja, nasze ja - budzi się.",
+        "chords": []
+      },
+      {
+        "text": "",
         "chords": []
       },
       {
@@ -9761,7 +9768,26 @@
         "chords": []
       },
       {
-        "text": "Twoje ja pomoże ci, twoje ja zniweczy grzech, grzech, grzech.",
+        "text": "Twoje ja pomoże ci, twoje ja - zniweczy grzech, grzech, grzech.",
+        "chords": []
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "",
+        "chords": [
+          "h",
+          "ais",
+          "A",
+          "h",
+          "ais",
+          "A"
+        ]
+      },
+      {
+        "text": "",
         "chords": []
       },
       {
@@ -9781,6 +9807,10 @@
         "chords": []
       },
       {
+        "text": "",
+        "chords": []
+      },
+      {
         "text": "Słuchaj Pana w swym sumieniu,",
         "chords": []
       },
@@ -9794,6 +9824,10 @@
       },
       {
         "text": "On pomoże tobie powstać, jeśli szczerze pragniesz tego.",
+        "chords": []
+      },
+      {
+        "text": "",
         "chords": []
       },
       {
@@ -9813,7 +9847,12 @@
         "chords": []
       }
     ],
-    "tags": []
+    "tags": [
+      "rege",
+      "reagge",
+      "daab",
+      "1993"
+    ]
   },
   {
     "title": "W moim ogrodzie.",
