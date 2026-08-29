@@ -23991,8 +23991,9 @@
         ]
       },
       {
-        "text": "Tańczyła Helka klawa wybrany świata cud G7",
+        "text": "Tańczyła Helka klawa wybrany świata cud",
         "chords": [
+          "G7",
           "C"
         ]
       },
@@ -24009,18 +24010,27 @@
         "chords": []
       },
       {
-        "text": "Rum Helka, rum Helka tyś gruba jak ta belka C G7",
-        "chords": []
+        "text": "Rum Helka, rum Helka tyś gruba jak ta belka",
+        "chords": [
+          "C",
+          "G7",
+          "|"
+        ]
       },
       {
-        "text": "Tyś mocna jak ta szklanka masz suknię pod kolanka G7 C D7",
+        "text": "Tyś mocna jak ta szklanka masz suknię pod kolanka",
         "chords": [
+          "G7",
+          "C",
+          "D7",
           "G"
         ]
       },
       {
-        "text": "Tyś jest dziewczyna fest czy masz sztajerski gest C G7",
+        "text": "Tyś jest dziewczyna fest czy masz sztajerski gest",
         "chords": [
+          "C",
+          "G7",
           "C"
         ]
       },
