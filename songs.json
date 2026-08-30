@@ -21243,16 +21243,25 @@
         ]
       },
       {
-        "text": "Małe kino a a-",
-        "chords": []
-      },
-      {
-        "text": "Czy pamiętasz małe nieme kino a 23",
-        "chords": []
-      },
-      {
-        "text": "Na ekranie Rudolf Valentino 23",
+        "text": "Małe kino",
         "chords": [
+          "a",
+          "a-",
+          "|"
+        ]
+      },
+      {
+        "text": "Czy pamiętasz małe nieme kino",
+        "chords": [
+          "a",
+          "23",
+          "|"
+        ]
+      },
+      {
+        "text": "Na ekranie Rudolf Valentino",
+        "chords": [
+          "23",
           "d"
         ]
       },
@@ -21293,8 +21302,9 @@
         ]
       },
       {
-        "text": "Ach jak wzruszeni miłością swą H7",
+        "text": "Ach jak wzruszeni miłością swą",
         "chords": [
+          "H7",
           "E"
         ]
       },
@@ -21335,7 +21345,9 @@
         "chords": []
       }
     ],
-    "tags": []
+    "tags": [
+      "przedwojenne"
+    ]
   },
   {
     "title": "Kubuś",
