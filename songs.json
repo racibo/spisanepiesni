@@ -50120,7 +50120,9 @@
         "chords": []
       }
     ],
-    "tags": []
+    "tags": [
+      "kaczmarski"
+    ]
   },
   {
     "title": "Jak się uprę",
@@ -50138,7 +50140,8 @@
       {
         "text": "A jo wiecie mom te hobby, że buduję se samolot.",
         "chords": [
-          "ea",
+          "e",
+          "a",
           "e",
           "H7",
           "E"
