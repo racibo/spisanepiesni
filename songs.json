@@ -52825,47 +52825,29 @@
         "chords": []
       },
       {
-        "text": "Jak stalowa cienka struna",
+        "text": "Jak stalowa cienka struna, która na me palce czeka",
         "chords": [
           "c"
         ]
       },
       {
-        "text": "która na me palce czeka",
-        "chords": []
-      },
-      {
-        "text": "jak na niebie mokra łuna",
+        "text": "jak na niebie mokra łuna, kiedy księżyc połknie rzeka",
         "chords": [
           "g"
         ]
       },
       {
-        "text": "kiedy księżyc połknie rzeka",
-        "chords": []
-      },
-      {
-        "text": "Jak sto wraków u wybrzeży",
+        "text": "Jak sto wraków u wybrzeży, jak ostatni grosz złamany",
         "chords": [
-          "c"
-        ]
-      },
-      {
-        "text": "jak ostatni grosz złamany",
-        "chords": [
+          "c",
           "g"
         ]
       },
       {
-        "text": "i jak dzwonu głos na wieży",
+        "text": "i jak dzwonu głos na wieży gdy wróg stoi za murami",
         "chords": [
           "Gis",
-          "B"
-        ]
-      },
-      {
-        "text": "gdy wróg stoi za murami",
-        "chords": [
+          "B",
           "g"
         ]
       },
@@ -52874,34 +52856,21 @@
         "chords": []
       },
       {
-        "text": "Takie czuję przygnębienie",
+        "text": "Takie czuję przygnębienie taki nastrój minorowy",
         "chords": [
           "c"
         ]
       },
       {
-        "text": "taki nastrój minorowy",
-        "chords": []
-      },
-      {
-        "text": "Brzmi fortepian jak cierpienie",
+        "text": "Brzmi fortepian jak cierpienie, nic nie zmienię nie ma mowy",
         "chords": [
           "23"
         ]
       },
       {
-        "text": "nic nie zmienię nie ma mowy",
-        "chords": []
-      },
-      {
-        "text": "Tylko takie pieśni umiem",
+        "text": "Tylko takie pieśni umiem, takie pieśni pisać umiem",
         "chords": [
-          "f"
-        ]
-      },
-      {
-        "text": "takie pieśni pisać umiem",
-        "chords": [
+          "f",
           "g"
         ]
       },
@@ -52918,35 +52887,45 @@
       },
       {
         "text": "Jak ostatni liść na drzewie",
-        "chords": []
-      },
-      {
-        "text": "kiedy jesień krzesła zwija",
-        "chords": []
+        "chords": [
+          "kiedy",
+          "jesień",
+          "krzesła",
+          "zwija",
+          "|"
+        ]
       },
       {
         "text": "jak nie twoja dłoń w potrzebie",
-        "chords": []
-      },
-      {
-        "text": "lecz dłoń obca dłoń niczyja",
-        "chords": []
+        "chords": [
+          "lecz",
+          "dłoń",
+          "obca",
+          "dłoń",
+          "niczyja",
+          "|"
+        ]
       },
       {
         "text": "Jak pokracznych przysiąg orszak",
-        "chords": []
-      },
-      {
-        "text": "ileż tych obietnic było",
-        "chords": []
+        "chords": [
+          "ileż",
+          "tych",
+          "obietnic",
+          "było",
+          "|"
+        ]
       },
       {
         "text": "jak pytanie czy mnie kochasz",
-        "chords": []
-      },
-      {
-        "text": "i milczenie twe jak wyrok",
-        "chords": []
+        "chords": [
+          "i",
+          "milczenie",
+          "twe",
+          "jak",
+          "wyrok",
+          "|"
+        ]
       },
       {
         "text": "",
@@ -52954,27 +52933,34 @@
       },
       {
         "text": "Takie czuję przygnębienie",
-        "chords": []
-      },
-      {
-        "text": "taki nastrój minorowy",
-        "chords": []
+        "chords": [
+          "taki",
+          "nastrój",
+          "minorowy",
+          "|"
+        ]
       },
       {
         "text": "Brzmi fortepian jak cierpienie",
-        "chords": []
-      },
-      {
-        "text": "nic nie zmienię nie ma mowy",
-        "chords": []
+        "chords": [
+          "nic",
+          "nie",
+          "zmienię",
+          "nie",
+          "ma",
+          "mowy",
+          "|"
+        ]
       },
       {
         "text": "Tylko takie pieśni umiem",
-        "chords": []
-      },
-      {
-        "text": "takie pieśni pisać umiem",
-        "chords": []
+        "chords": [
+          "takie",
+          "pieśni",
+          "pisać",
+          "umiem",
+          "|"
+        ]
       },
       {
         "text": "Wcale świata nie rozumiem",
@@ -52986,35 +52972,46 @@
       },
       {
         "text": "Jak niechciany ciężar zdarzeń",
-        "chords": []
-      },
-      {
-        "text": "który niosę na swym grzbiecie",
-        "chords": []
+        "chords": [
+          "który",
+          "niosę",
+          "na",
+          "swym",
+          "grzbiecie",
+          "|"
+        ]
       },
       {
         "text": "i jak ptaki – lotni kpiarze –",
-        "chords": []
-      },
-      {
-        "text": "bo najlżejsze są na świecie",
-        "chords": []
+        "chords": [
+          "bo",
+          "najlżejsze",
+          "są",
+          "na",
+          "świecie",
+          "|"
+        ]
       },
       {
         "text": "Jak krzyk pierwszy noworodka",
-        "chords": []
-      },
-      {
-        "text": "i ostatnie przebudzenia",
-        "chords": []
+        "chords": [
+          "i",
+          "ostatnie",
+          "przebudzenia",
+          "|"
+        ]
       },
       {
         "text": "Jak noc która nie jest słodka",
-        "chords": []
-      },
-      {
-        "text": "i jak miłość której nie ma",
-        "chords": []
+        "chords": [
+          "i",
+          "jak",
+          "miłość",
+          "której",
+          "nie",
+          "ma",
+          "|"
+        ]
       },
       {
         "text": "",
@@ -53022,34 +53019,44 @@
       },
       {
         "text": "Takie czuję przygnębienie",
-        "chords": []
-      },
-      {
-        "text": "taki nastrój minorowy",
-        "chords": []
+        "chords": [
+          "taki",
+          "nastrój",
+          "minorowy",
+          "|"
+        ]
       },
       {
         "text": "Brzmi fortepian jak cierpienie",
-        "chords": []
-      },
-      {
-        "text": "nic nie zmienię nie ma mowy",
-        "chords": []
+        "chords": [
+          "nic",
+          "nie",
+          "zmienię",
+          "nie",
+          "ma",
+          "mowy",
+          "|"
+        ]
       },
       {
         "text": "Tylko takie pieśni umiem",
-        "chords": []
-      },
-      {
-        "text": "takie pieśni pisać umiem",
-        "chords": []
+        "chords": [
+          "takie",
+          "pieśni",
+          "pisać",
+          "umiem",
+          "|"
+        ]
       },
       {
         "text": "Wcale świata nie rozumiem",
         "chords": []
       }
     ],
-    "tags": []
+    "tags": [
+      "przekłady",
+      "nohavica"
+    ]
   },
   {
     "title": "Musli (Hey)",
