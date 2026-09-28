@@ -30132,12 +30132,20 @@
     "title": "Sznurek",
     "lyrics": [
       {
-        "text": "Schowaliśmy się za garaż a ty jeden z drugim, co tam jarasz ? A E",
-        "chords": []
+        "text": "Schowaliśmy się za garaż a ty jeden z drugim, co tam jarasz ?",
+        "chords": [
+          "A",
+          "E",
+          "|"
+        ]
       },
       {
-        "text": "Dobiegł nas znienacka głos, głos nauczyciela WOS E7 A",
-        "chords": []
+        "text": "Dobiegł nas znienacka głos, głos nauczyciela WOS",
+        "chords": [
+          "E7",
+          "A",
+          "|"
+        ]
       },
       {
         "text": "Nic takiego panie psorze, nie, nie, to nie tytoń, broń cię Boże",
@@ -55262,6 +55270,300 @@
     ],
     "tags": [
       "gintrowski"
+    ]
+  },
+  {
+    "title": "Pomidory",
+    "lyrics": [
+      {
+        "text": "",
+        "chords": [
+          "C7+........",
+          "C7+",
+          "C7+",
+          "D",
+          ".......",
+          "h",
+          "h",
+          "h",
+          "e7",
+          "x4",
+          "C7+"
+        ]
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "Miłość ma niezwykły smak, bo smakuje całkiem tak",
+        "chords": [
+          "C7+",
+          "D-",
+          "h",
+          "e7"
+        ]
+      },
+      {
+        "text": "Jak po-po-po-po-po pomidory w lutym, gdy ich brak.",
+        "chords": []
+      },
+      {
+        "text": "Męczy zmora aż po świt, pomidora rośnie mit:",
+        "chords": []
+      },
+      {
+        "text": "Żeby choć jeden kęs, a życie znowu miałoby sens.",
+        "chords": [
+          "C7+",
+          "h",
+          "a"
+        ]
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "Miłość to jest taki miód, co smakuje gorzko ciut,",
+        "chords": [
+          "C7+",
+          "D-",
+          "h",
+          "e7"
+        ]
+      },
+      {
+        "text": "Jak po-po-po-po-po, pomidory latem, gdy ich w bród.",
+        "chords": []
+      },
+      {
+        "text": "Płacze córka, jęczy mąż, że i skórka mdła, i miąższ.",
+        "chords": []
+      },
+      {
+        "text": "Mokrzy od łez i źli, proszą o kres tych pomidorowych dni.",
+        "chords": [
+          "C7+",
+          "h",
+          "a",
+          "G"
+        ]
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "Nie mów nic, ten nasz krótki sen, rozwiał się tak jak dym.",
+        "chords": [
+          "C7+",
+          "G",
+          "C7+"
+        ]
+      },
+      {
+        "text": "I wiem, ze oddałabym, dałabym dziś wszystko,",
+        "chords": [
+          "h",
+          "Ee",
+          "a",
+          "D"
+        ]
+      },
+      {
+        "text": "Żeby być, by znów z tobą być, blisko, blisko…",
+        "chords": [
+          "h",
+          "Ee",
+          ",",
+          "C",
+          "h",
+          "a",
+          "D"
+        ]
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "Miłość to jest taki miód...",
+        "chords": []
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "Nie mów nic, ten nasz krótki sen, rozwiał się tak jak dym.",
+        "chords": []
+      },
+      {
+        "text": "I wiem, ze oddałabym, dałabym dziś wszystko,",
+        "chords": []
+      },
+      {
+        "text": "Żeby być, by znów z tobą być",
+        "chords": []
+      },
+      {
+        "text": "blisko, blisko…",
+        "chords": []
+      }
+    ],
+    "tags": [
+      "bem",
+      "1984",
+      "ścierański",
+      "skubikowski"
+    ]
+  },
+  {
+    "title": "Pomidory",
+    "lyrics": [
+      {
+        "text": "",
+        "chords": [
+          "C7+........",
+          "C7+",
+          "C7+",
+          "D",
+          ".......",
+          "h",
+          "h",
+          "h",
+          "e7",
+          "x4",
+          "C7+"
+        ]
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "Miłość ma niezwykły smak, bo smakuje całkiem tak",
+        "chords": [
+          "C7+",
+          "D-",
+          "h",
+          "e7"
+        ]
+      },
+      {
+        "text": "Jak po-po-po-po-po pomidory w lutym, gdy ich brak.",
+        "chords": []
+      },
+      {
+        "text": "Męczy zmora aż po świt, pomidora rośnie mit:",
+        "chords": []
+      },
+      {
+        "text": "Żeby choć jeden kęs, a życie znowu miałoby sens.",
+        "chords": [
+          "C7+",
+          "h",
+          "a"
+        ]
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "Miłość to jest taki miód, co smakuje gorzko ciut,",
+        "chords": [
+          "C7+",
+          "D-",
+          "h",
+          "e7"
+        ]
+      },
+      {
+        "text": "Jak po-po-po-po-po, pomidory latem, gdy ich w bród.",
+        "chords": []
+      },
+      {
+        "text": "Płacze córka, jęczy mąż, że i skórka mdła, i miąższ.",
+        "chords": []
+      },
+      {
+        "text": "Mokrzy od łez i źli, proszą o kres tych pomidorowych dni.",
+        "chords": [
+          "C7+",
+          "h",
+          "a",
+          "G"
+        ]
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "Nie mów nic, ten nasz krótki sen, rozwiał się tak jak dym.",
+        "chords": [
+          "C7+",
+          "G",
+          "C7+"
+        ]
+      },
+      {
+        "text": "I wiem, ze oddałabym, dałabym dziś wszystko,",
+        "chords": [
+          "h",
+          "Ee",
+          "a",
+          "D"
+        ]
+      },
+      {
+        "text": "Żeby być, by znów z tobą być, blisko, blisko…",
+        "chords": [
+          "h",
+          "Ee",
+          ",",
+          "C",
+          "h",
+          "a",
+          "D"
+        ]
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "Miłość to jest taki miód...",
+        "chords": []
+      },
+      {
+        "text": "",
+        "chords": []
+      },
+      {
+        "text": "Nie mów nic, ten nasz krótki sen, rozwiał się tak jak dym.",
+        "chords": []
+      },
+      {
+        "text": "I wiem, ze oddałabym, dałabym dziś wszystko,",
+        "chords": []
+      },
+      {
+        "text": "Żeby być, by znów z tobą być",
+        "chords": []
+      },
+      {
+        "text": "blisko, blisko…",
+        "chords": []
+      }
+    ],
+    "tags": [
+      "bem",
+      "1984",
+      "ścierański",
+      "skubikowski"
     ]
   }
 ]
