@@ -9226,14 +9226,14 @@
       {
         "text": "Powinien być prosty jak zegarek świat",
         "chords": [
-          "CGC",
+          "C||G||C",
           "|"
         ]
       },
       {
         "text": "Po każdym tik byłoby tak",
         "chords": [
-          "GC",
+          "G||C",
           "|"
         ]
       },
@@ -9242,7 +9242,8 @@
         "chords": [
           "d",
           "G",
-          "Ca",
+          "C",
+          "a",
           "|"
         ]
       },
@@ -9251,7 +9252,8 @@
         "chords": [
           "d",
           "G",
-          "Ca",
+          "C",
+          "a",
           "|"
         ]
       },
@@ -9260,7 +9262,8 @@
         "chords": [
           "d",
           "G",
-          "Ca",
+          "C",
+          "a",
           "|"
         ]
       },
@@ -44941,20 +44944,20 @@
         "text": "Życie się stało udręką",
         "chords": [
           "e",
-          "a"
+          "||a"
         ]
       },
       {
         "text": "Przez twą piosenkę sprzed lat",
         "chords": [
           "D",
-          "G"
+          "||G"
         ]
       },
       {
         "text": "Pójdę do piekła z piosenką",
         "chords": [
-          "e",
+          "e||",
           "a"
         ]
       },
@@ -44962,14 +44965,14 @@
         "text": "Z twoją piosenką do piekła",
         "chords": [
           "D",
-          "C"
+          "||C"
         ]
       },
       {
         "text": "Ona jest we mnie i ze mną",
         "chords": [
           "G",
-          "C"
+          "||C"
         ]
       },
       {
@@ -44992,21 +44995,21 @@
         "text": "Słyszę ją wciąż i wszędzie",
         "chords": [
           "a",
-          "D"
+          "||D"
         ]
       },
       {
         "text": "Jest ze mną nawet w snach",
         "chords": [
           "G",
-          "C"
+          "||C"
         ]
       },
       {
         "text": "I gra i łka wspomnieniem",
         "chords": [
           "a",
-          "D"
+          "||D"
         ]
       },
       {
@@ -45018,14 +45021,14 @@
       {
         "text": "Zagłusza sobą wszystko",
         "chords": [
-          "a",
+          "a||",
           "D"
         ]
       },
       {
         "text": "Przesłania cały świat",
         "chords": [
-          "G",
+          "G||",
           "H7"
         ]
       },
@@ -45035,31 +45038,50 @@
       },
       {
         "text": "Życie się stało udręką",
-        "chords": []
+        "chords": [
+          "e",
+          "||a"
+        ]
       },
       {
         "text": "Przez twą piosenkę sprzed lat",
-        "chords": []
+        "chords": [
+          "D",
+          "||G"
+        ]
       },
       {
         "text": "Pójdę do piekła z piosenką",
-        "chords": []
+        "chords": [
+          "e||",
+          "a"
+        ]
       },
       {
         "text": "Z twoją piosenką do piekła",
-        "chords": []
+        "chords": [
+          "D",
+          "||C"
+        ]
       },
       {
         "text": "Ona jest we mnie i ze mną",
-        "chords": []
+        "chords": [
+          "G",
+          "||C"
+        ]
       },
       {
         "text": "Pójdę do piekła",
-        "chords": []
+        "chords": [
+          "a"
+        ]
       },
       {
         "text": "Pójdę z nią",
-        "chords": []
+        "chords": [
+          "H7"
+        ]
       },
       {
         "text": "",
@@ -45067,27 +45089,44 @@
       },
       {
         "text": "Przez złą piosenkę wreszcie",
-        "chords": []
+        "chords": [
+          "a",
+          "||D"
+        ]
       },
       {
         "text": "Sama się stałam zła",
-        "chords": []
+        "chords": [
+          "G",
+          "||C"
+        ]
       },
       {
         "text": "I nigdy się nie zmienię",
-        "chords": []
+        "chords": [
+          "a",
+          "||D"
+        ]
       },
       {
         "text": "Piosenka będzie mną",
-        "chords": []
+        "chords": [
+          "e"
+        ]
       },
       {
         "text": "Zagłuszy we mnie wszystko",
-        "chords": []
+        "chords": [
+          "a||",
+          "D"
+        ]
       },
       {
         "text": "Wszystko się zmieni w nią",
-        "chords": []
+        "chords": [
+          "G||",
+          "H7"
+        ]
       },
       {
         "text": "",
@@ -45095,31 +45134,50 @@
       },
       {
         "text": "Życie się stało udręką",
-        "chords": []
+        "chords": [
+          "e",
+          "||a"
+        ]
       },
       {
         "text": "Przez twą piosenkę sprzed lat",
-        "chords": []
+        "chords": [
+          "D",
+          "||G"
+        ]
       },
       {
         "text": "Pójdę do piekła z piosenką",
-        "chords": []
+        "chords": [
+          "e||",
+          "a"
+        ]
       },
       {
         "text": "Z twoją piosenką do piekła",
-        "chords": []
+        "chords": [
+          "D",
+          "||C"
+        ]
       },
       {
         "text": "Ona jest we mnie i ze mną",
-        "chords": []
+        "chords": [
+          "G",
+          "||C"
+        ]
       },
       {
         "text": "Pójdę do piekła",
-        "chords": []
+        "chords": [
+          "a"
+        ]
       },
       {
         "text": "Pójdę z nią",
-        "chords": []
+        "chords": [
+          "H7"
+        ]
       },
       {
         "text": "",
