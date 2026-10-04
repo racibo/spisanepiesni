@@ -354,6 +354,13 @@
             flex: 0 0 auto;
             order: 2;
         }
+        .chord-item {
+            display: inline-block;
+        }
+        .chord-gap {
+            display: inline-block;
+            width: 2ch;
+        }
         .lyric { 
             color: var(--text); 
             white-space: pre-wrap; 
@@ -376,6 +383,9 @@
             order: 0;
             white-space: normal;
             flex: 1 1 auto;
+        }
+        body.chords-above .chord-gap {
+            width: 2ch;
         }
         body.chords-above .lyric {
             order: 1;
@@ -3218,10 +3228,74 @@ var qrcode = function() {
                 link.classList.toggle("active", link.textContent === song.title);
             });
         }
+        // Rozdziela zapis akordów od znaczników pozycji.
+        // Pierwszy "|" jest dotychczasowym początkiem listy akordów.
+        // Każdy kolejny "|" oznacza dodatkowy odstęp 2 znaków w trybie „akordy nad”.
+        // Znaczniki pozycji nigdy nie trafiają do transpozycji.
+        function parseChordLine(chords) {
+            const parts = Array.isArray(chords) ? chords : [chords];
+            const result = [];
+            let chordSectionStarted = false;
+            let pendingGaps = 0;
+
+            parts.forEach(part => {
+                String(part)
+                    .split(/(\|)/g)
+                    .forEach(piece => {
+                        const token = piece.trim();
+                        if (!token) return;
+
+                        if (token === "|") {
+                            if (!chordSectionStarted) {
+                                chordSectionStarted = true;
+                            } else {
+                                pendingGaps += 1;
+                            }
+                            return;
+                        }
+
+                        result.push({
+                            chord: token,
+                            gapsBefore: pendingGaps
+                        });
+                        pendingGaps = 0;
+                    });
+            });
+
+            return result;
+        }
+
+        function renderChordLine(chords, chordSpan) {
+            const parsed = parseChordLine(chords);
+
+            if (chordLayoutMode === "above") {
+                parsed.forEach(item => {
+                    for (let i = 0; i < item.gapsBefore; i++) {
+                        const gap = document.createElement("span");
+                        gap.className = "chord-gap";
+                        gap.setAttribute("aria-hidden", "true");
+                        chordSpan.appendChild(gap);
+                    }
+
+                    const chord = document.createElement("span");
+                    chord.className = "chord-item";
+                    chord.textContent = transposeChordStr(item.chord, currentTransposition);
+                    chordSpan.appendChild(chord);
+                });
+            } else {
+                // W trybie „akordy obok” znaczniki "|" są całkowicie ignorowane.
+                chordSpan.textContent = parsed
+                    .map(item => transposeChordStr(item.chord, currentTransposition))
+                    .join(" ");
+            }
+
+            return parsed.length > 0;
+        }
 
         function renderLyrics() {
             const container = document.getElementById("song-body");
             container.innerHTML = "";
+
             currentSong.lyrics.forEach(line => {
                 const row = document.createElement("div");
                 row.className = "song-line";
@@ -3229,8 +3303,10 @@ var qrcode = function() {
                 if (line.chords && line.chords.length > 0) {
                     const chordSpan = document.createElement("div");
                     chordSpan.className = "chords";
-                    chordSpan.textContent = line.chords.map(c => transposeChordStr(c, currentTransposition)).join(" ");
-                    row.appendChild(chordSpan);
+
+                    if (renderChordLine(line.chords, chordSpan)) {
+                        row.appendChild(chordSpan);
+                    }
                 }
 
                 const lyricSpan = document.createElement("div");
