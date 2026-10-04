@@ -3273,11 +3273,16 @@ var qrcode = function() {
             const parsed = parseChordLine(chords);
 
             if (chordLayoutMode === "above") {
-                parsed.forEach(item => {
-                    for (let i = 0; i < item.gapsBefore; i++) {
+                parsed.forEach((item, index) => {
+                    // Między zwykłymi akordami jest odstęp 1 znaku.
+                    // Każdy dodatkowy "|" dodaje 3 znaki, więc:
+                    //   A G   -> 1 znak
+                    //   A |G  -> 4 znaki
+                    if (index > 0) {
                         const gap = document.createElement("span");
                         gap.className = "chord-gap";
                         gap.setAttribute("aria-hidden", "true");
+                        gap.style.width = `${1 + item.gapsBefore * 3}ch`;
                         chordSpan.appendChild(gap);
                     }
 
@@ -3356,25 +3361,61 @@ var qrcode = function() {
             if(currentSong) renderLyrics();
         }
 
-        function transposeChordStr(chordStr, steps) {
-            // Najpierw zawsze normalizujemy zapis nuty (np. Eis -> F, Cisis -> D),
-            // nawet gdy steps === 0, bo w danych źródłowych mogą wystąpić
-            // niepoprawne/nietypowe zapisy enharmoniczne (np. podwójne podwyższenia).
+        // Rozbija sklejone akordy, np. GDA -> [G, D, A].
+        // Kolejny akord rozpoznajemy po wielkiej literze A-H.
+        // Dzięki temu nie rozbijamy nazw z opisowymi przyrostkami, np. Cmaj7.
+        function splitCompactChordToken(chordStr) {
+            if (!/^[A-Ha-h]/.test(chordStr) || !/[A-H][A-Ha-h]/.test(chordStr)) {
+                return [chordStr];
+            }
+
+            const starts = [];
+            for (let i = 1; i < chordStr.length; i++) {
+                if (/[A-H]/.test(chordStr[i])) starts.push(i);
+            }
+
+            if (starts.length === 0) return [chordStr];
+
+            const boundaries = [0, ...starts, chordStr.length];
+            const tokens = [];
+
+            for (let i = 0; i < boundaries.length - 1; i++) {
+                const token = chordStr.slice(boundaries[i], boundaries[i + 1]);
+                const match = token.match(/^([A-Ha-h](?:isis|is|eses|es|s|##|#|bb|b)?)(.*)$/);
+                if (!match || noteValues[match[1].charAt(0).toUpperCase() + match[1].slice(1)] === undefined) {
+                    return [chordStr];
+                }
+                tokens.push(token);
+            }
+
+            return tokens.length > 1 ? tokens : [chordStr];
+        }
+
+        function transposeSingleChord(chordStr, steps) {
             const match = chordStr.match(/^([A-Ha-h](?:isis|is|eses|es|s|##|#|bb|b)?)(.*)$/);
             if (!match) return chordStr;
 
             let base = match[1];
             const rest = match[2];
-            let isMinor = base.charAt(0) === base.charAt(0).toLowerCase();
+            const isMinor = base.charAt(0) === base.charAt(0).toLowerCase();
             base = base.charAt(0).toUpperCase() + base.slice(1);
 
-            let val = noteValues[base];
+            const val = noteValues[base];
             if (val === undefined) return chordStr;
 
-            let newVal = ((val + steps) % 12 + 12) % 12;
-            let newBase = polishNames[newVal];
+            const newVal = ((val + steps) % 12 + 12) % 12;
+            const newBase = polishNames[newVal];
 
             return (isMinor ? newBase.toLowerCase() : newBase) + rest;
+        }
+
+        function transposeChordStr(chordStr, steps) {
+            // Zwykły akord pozostaje jednym akordem, natomiast zapis bez
+            // separatorów, np. GDA, jest transponowany akord po akordzie:
+            // GDA +1 -> GisDisB.
+            return splitCompactChordToken(String(chordStr))
+                .map(chord => transposeSingleChord(chord, steps))
+                .join("");
         }
 
         // ---- LOGIKA ROZMIARU TEKSTU ----
