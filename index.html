@@ -3244,7 +3244,7 @@ var qrcode = function() {
 
             parts.forEach(part => {
                 String(part)
-                    .split(/(\|)/g)
+                    .split(/(\||\s+)/g)
                     .forEach(piece => {
                         const token = piece.trim();
                         if (!token) return;
