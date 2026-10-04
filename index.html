@@ -2970,6 +2970,10 @@ var qrcode = function() {
             const btn = document.getElementById("chord-layout-toggle");
             btn.querySelector(".btn-icon").textContent = chordLayoutMode === "above" ? "⬆" : "⇄";
             btn.querySelector(".btn-label").textContent = chordLayoutMode === "above" ? "Akordy: nad" : "Akordy: obok";
+
+            // Po zmianie trybu trzeba ponownie wyrenderować akordy,
+            // ponieważ tylko „akordy nad” wykorzystują znaczniki "|" jako odstępy.
+            if (currentSong) renderLyrics();
         }
         applyChordLayoutMode();
         
