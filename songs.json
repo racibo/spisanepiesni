@@ -45280,31 +45280,7 @@
         "chords": []
       },
       {
-        "text": "Życie się stało udręką",
-        "chords": []
-      },
-      {
-        "text": "Przez twą piosenkę sprzed lat",
-        "chords": []
-      },
-      {
-        "text": "Pójdę do piekła z piosenką",
-        "chords": []
-      },
-      {
-        "text": "Z twoją piosenką do piekła",
-        "chords": []
-      },
-      {
-        "text": "Ona jest we mnie i ze mną",
-        "chords": []
-      },
-      {
-        "text": "Pójdę do piekła",
-        "chords": []
-      },
-      {
-        "text": "Pójdę z nią",
+        "text": "x2",
         "chords": []
       },
       {
@@ -45313,31 +45289,50 @@
       },
       {
         "text": "I tak życie już jest",
-        "chords": []
+        "chords": [
+          "e",
+          "||a"
+        ]
       },
       {
         "text": "Jedną udręką i grą",
-        "chords": []
+        "chords": [
+          "D",
+          "||G"
+        ]
       },
       {
         "text": "Pójdę do piekła z piosenką",
-        "chords": []
+        "chords": [
+          "e||",
+          "a"
+        ]
       },
       {
         "text": "Z twoją piosenką do piekła",
-        "chords": []
+        "chords": [
+          "D",
+          "||C"
+        ]
       },
       {
         "text": "Ona jest we mnie i ze mną",
-        "chords": []
+        "chords": [
+          "G",
+          "||C"
+        ]
       },
       {
         "text": "Pójdę do piekła",
-        "chords": []
+        "chords": [
+          "a"
+        ]
       },
       {
         "text": "Pójdę z nią",
-        "chords": []
+        "chords": [
+          "H7"
+        ]
       }
     ],
     "tags": [
