@@ -381,8 +381,11 @@
         }
         body.chords-above .chords {
             order: 0;
-            white-space: normal;
+            white-space: pre;
             flex: 1 1 auto;
+            max-width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
         }
         body.chords-above .chord-gap {
             width: 2ch;
@@ -3237,9 +3240,44 @@ var qrcode = function() {
         // Każdy kolejny "|" oznacza dodatkowy odstęp 2 znaków w trybie „akordy nad”.
         // Znaczniki pozycji nigdy nie trafiają do transpozycji.
         function parseChordLine(chords) {
+            // Nowy zapis zachowuje odstępy, np. "A       G   D".
+            // Stary zapis z dodatkowymi "|" pozostaje obsługiwany.
+            if (typeof chords === "string") {
+                const result = [];
+                let token = "";
+                let spaces = 0;
+                let legacyGaps = 0;
+
+                const pushToken = () => {
+                    if (!token) return;
+                    const gapBefore = result.length === 0
+                        ? 0
+                        : spaces + legacyGaps * 3 + 1;
+                    result.push({ chord: token, gapBefore, gapsBefore: legacyGaps });
+                    token = "";
+                    spaces = 0;
+                    legacyGaps = 0;
+                };
+
+                for (const char of chords) {
+                    if (char === "|") {
+                        pushToken();
+                        legacyGaps += 1;
+                        spaces = 0;
+                    } else if (/\s/.test(char)) {
+                        if (token) pushToken();
+                        spaces += 1;
+                    } else {
+                        token += char;
+                    }
+                }
+                pushToken();
+                return result;
+            }
+
+            // Stary format tablicowy, np. ["A", "|", "G"].
             const parts = Array.isArray(chords) ? chords : [chords];
             const result = [];
-            let chordSectionStarted = false;
             let pendingGaps = 0;
 
             parts.forEach(part => {
@@ -3248,24 +3286,18 @@ var qrcode = function() {
                     .forEach(piece => {
                         const token = piece.trim();
                         if (!token) return;
-
                         if (token === "|") {
-                            if (!chordSectionStarted) {
-                                chordSectionStarted = true;
-                            } else {
-                                pendingGaps += 1;
-                            }
+                            if (result.length > 0) pendingGaps += 1;
                             return;
                         }
-
                         result.push({
                             chord: token,
+                            gapBefore: result.length === 0 ? 0 : 1 + pendingGaps * 3,
                             gapsBefore: pendingGaps
                         });
                         pendingGaps = 0;
                     });
             });
-
             return result;
         }
 
@@ -3274,30 +3306,32 @@ var qrcode = function() {
 
             if (chordLayoutMode === "above") {
                 parsed.forEach((item, index) => {
-                    // Między zwykłymi akordami jest odstęp 1 znaku.
-                    // Każdy dodatkowy "|" dodaje 3 znaki, więc:
-                    //   A G   -> 1 znak
-                    //   A |G  -> 4 znaki
                     if (index > 0) {
                         const gap = document.createElement("span");
                         gap.className = "chord-gap";
                         gap.setAttribute("aria-hidden", "true");
-                        gap.style.width = `${1 + item.gapsBefore * 3}ch`;
+                        gap.style.width = `${Math.max(1, item.gapBefore)}ch`;
                         chordSpan.appendChild(gap);
                     }
-
                     const chord = document.createElement("span");
                     chord.className = "chord-item";
                     chord.textContent = transposeChordStr(item.chord, currentTransposition);
                     chordSpan.appendChild(chord);
                 });
             } else {
-                // W trybie „akordy obok” znaczniki "|" są całkowicie ignorowane.
-                chordSpan.textContent = parsed
-                    .map(item => transposeChordStr(item.chord, currentTransposition))
-                    .join(" ");
+                // W trybie „akordy obok” duże odstępy są redukowane do maks. 3 spacji.
+                parsed.forEach((item, index) => {
+                    if (index > 0) {
+                        chordSpan.appendChild(
+                            document.createTextNode(" ".repeat(Math.min(3, Math.max(1, item.gapBefore))))
+                        );
+                    }
+                    const chord = document.createElement("span");
+                    chord.className = "chord-item";
+                    chord.textContent = transposeChordStr(item.chord, currentTransposition);
+                    chordSpan.appendChild(chord);
+                });
             }
-
             return parsed.length > 0;
         }
 
