@@ -382,23 +382,24 @@
         body.chords-above .chords {
             order: 0;
             /*
-             * W trybie „akordy nad” spacje z Warsztatu są pozycjami
-             * względem tekstu poniżej. Dlatego używamy tej samej rodziny
-             * i rozmiaru fontu co tekst. Wcześniej .chords używał
-             * monospace + większego fontu, więc jedna spacja była znacznie
-             * szersza i akordy przesuwały się względem tekstu.
+             * Pozycje z Warsztatu muszą używać dokładnie tych samych
+             * metryk znaków co tekst poniżej. Spacje są zwykłym tekstem;
+             * tylko same akordy są pogrubione.
              */
             white-space: pre;
             font-family: inherit;
             font-size: var(--song-font-size);
-            font-weight: 800;
+            font-weight: 400;
             flex: 1 1 auto;
             max-width: 100%;
             overflow-x: auto;
             overflow-y: hidden;
         }
+        body.chords-above .chord-item {
+            font-weight: 800;
+        }
         body.chords-above .chord-gap {
-            width: 2ch;
+            width: auto;
         }
         body.chords-above .lyric {
             order: 1;
@@ -3245,66 +3246,73 @@ var qrcode = function() {
                 link.classList.toggle("active", link.textContent === song.title);
             });
         }
-        // Rozdziela zapis akordów od znaczników pozycji.
-        // Pierwszy "|" jest dotychczasowym początkiem listy akordów.
-        // Każdy kolejny "|" oznacza dodatkowy odstęp 2 znaków w trybie „akordy nad”.
-        // Znaczniki pozycji nigdy nie trafiają do transpozycji.
+        // Układ akordów jest zapisem pozycyjnym z Warsztatu.
+        //
+        // ZASADA:
+        //   pierwszy "|" oddziela tekst od akordów i nie jest częścią układu;
+        //   spacje po nim oraz między akordami są zachowywane w trybie
+        //   „akordy nad” dokładnie tak, jak zostały wpisane;
+        //   kolejne "|" są starym znacznikiem dodatkowego odstępu:
+        //   każdy taki "|" dodaje 3 pozycje, więc zapis "A |G" oznacza
+        //   cztery pozycje między A i G (spacja przed "|" + 3).
+        //
+        // W trybie „obok” wszystkie te odstępy są celowo kompresowane
+        // do pojedynczego odstępu.
         function parseChordLine(chords) {
-            // W nowym formacie cały zapis po "|" jest jednym stringiem,
-            // np. " a       G    F". Spacje są informacją o pozycji akordów.
+            if (Array.isArray(chords) && chords.length === 1 && typeof chords[0] === "string") {
+                chords = chords[0];
+            }
+
             if (typeof chords === "string") {
                 const result = [];
+                let pendingSpaces = 0;
                 let token = "";
-                let gap = 0;
 
                 const pushToken = () => {
                     if (!token) return;
-                    result.push({ chord: token, gapBefore: gap });
+                    result.push({
+                        chord: token,
+                        gapBefore: pendingSpaces
+                    });
                     token = "";
-                    gap = 0;
+                    pendingSpaces = 0;
                 };
 
                 for (const char of chords) {
                     if (char === "|") {
-                        // Separator starego formatu zwiększa odstęp.
-                        if (token) pushToken();
-                        gap += 3;
-                    } else if (/\\s/.test(char)) {
-                        gap += 1;
+                        // Legacy marker: sam "|" nie jest zwykłą spacją.
+                        // Dodaje 3 pozycje; ewentualna spacja przed nim
+                        // została już policzona przez poprzednią iterację.
+                        pushToken();
+                        pendingSpaces += 3;
+                    } else if (/\s/.test(char)) {
+                        pendingSpaces += 1;
                     } else {
-                        // Każdy nowy znak po istniejącym odstępie zaczyna
-                        // kolejny akord. Dzięki temu "a       G    F"
-                        // staje się trzema akordami, a nie "aGF".
-                        if (token && gap > 0) {
+                        if (token && pendingSpaces > 0) {
                             pushToken();
                         }
                         token += char;
                     }
                 }
+
                 pushToken();
                 return result;
             }
 
-            // Nowy format z Warsztatu: jedna tablica z jednym stringiem.
-            // Nie rozbijamy jej po białych znakach.
-            if (Array.isArray(chords) && chords.length === 1 && typeof chords[0] === "string") {
-                return parseChordLine(chords[0]);
-            }
-
-            // Starszy format tablicowy.
+            // Starszy format tablicowy: zachowujemy go dla kompatybilności.
             const parts = Array.isArray(chords) ? chords : [chords];
             const result = [];
             let pendingGap = 0;
 
             parts.forEach(part => {
                 const str = String(part ?? "");
-                for (const piece of str.split(/(\\||\\s+)/g)) {
+                for (const piece of str.split(/(\||\s+)/g)) {
                     if (!piece) continue;
                     if (piece === "|") {
                         pendingGap += 3;
                         continue;
                     }
-                    if (/^\\s+$/.test(piece)) {
+                    if (/^\s+$/.test(piece)) {
                         pendingGap += piece.length;
                         continue;
                     }
@@ -3323,18 +3331,17 @@ var qrcode = function() {
 
             parsed.forEach((item, index) => {
                 if (chordLayoutMode === "above") {
-                    // W „akordy nad” każda spacja z Warsztatu jest
-                    // zachowana 1:1. Ponieważ .chords ma dokładnie ten sam
-                    // font i rozmiar co .lyric, szerokość spacji odpowiada
-                    // szerokości spacji w tekście poniżej.
+                    // WAŻNE: nie generujemy własnego „odstępu między akordami”.
+                    // Odtwarzamy dokładnie liczbę pozycji zapisaną w Warsztacie.
+                    // Dzięki temu "A       G    D" pozostaje "A       G    D".
                     if (item.gapBefore > 0) {
                         chordSpan.appendChild(
                             document.createTextNode(" ".repeat(item.gapBefore))
                         );
                     }
                 } else if (index > 0) {
-                    // W trybie „obok” duże odstępy z Warsztatu są celowo
-                    // redukowane do jednego wizualnego odstępu.
+                    // „Obok”: niezależnie od układu z Warsztatu zawsze jeden
+                    // kompaktowy odstęp między kolejnymi akordami.
                     const gap = document.createElement("span");
                     gap.className = "chord-gap";
                     chordSpan.appendChild(gap);
