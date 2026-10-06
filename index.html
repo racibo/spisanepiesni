@@ -3454,32 +3454,46 @@ var qrcode = function() {
             const original = String(chordStr).trim();
             if (!original) return [];
 
-            // Najważniejsze: jeżeli zapis zawiera spacje, zawsze traktujemy je
-            // jako separatory akordów. Dzięki temu stare i nowe dane działają
-            // identycznie: "a G E F F" -> a, G, E, F, F.
+            // Spacje są już jednoznacznym separatorem akordów.
             if (/\\s/.test(original)) {
                 return original.split(/\\s+/).filter(Boolean);
             }
 
-            // Jeden akord pozostaje jednym akordem.
-            if (/^[A-Ha-h](?:isis|eses|is|es|#|b)?(?:.*)$/.test(original)) {
+            // Akord z basem, np. C/G, pozostaje jednym akordem.
+            if (/^[A-Ha-h](?:isis|eses|is|es|#|b)?(?:.*)\\/[A-H-Ha-h](?:isis|eses|is|es|#|b)?$/.test(original)) {
                 return [original];
             }
 
-            // Stary zapis kilku akordów bez spacji, np. GDA.
+            // Jeżeli nie ma spacji, rozdzielamy sklejone akordy po kolejnych
+            // wielkich literach A-H:
+            //   GDA   -> G, D, A
+            //   aGEF  -> a, G, E, F
+            //   FisG  -> Fis, G
+            //   CisA7 -> Cis, A7
+            //
+            // Końcówki akordów (m, 7, maj7, sus4, add9, is, es itd.)
+            // nie zawierają kolejnej wielkiej litery A-H, więc nie są
+            // przypadkowo rozcinane.
             const tokens = [];
-            let start = 0;
+            let current = "";
 
-            for (let i = 1; i < original.length; i++) {
-                if (/[A-H]/.test(original[i])) {
-                    tokens.push(original.slice(start, i));
-                    start = i;
+            for (let i = 0; i < original.length; i++) {
+                const char = original[i];
+
+                if (i > 0 && /[A-H]/.test(char) && current) {
+                    tokens.push(current);
+                    current = "";
                 }
+
+                current += char;
             }
-            tokens.push(original.slice(start));
+
+            if (current) tokens.push(current);
 
             if (tokens.length < 2) return [original];
 
+            // Rozdzielenie stosujemy tylko wtedy, gdy każdy fragment
+            // rzeczywiście wygląda jak akord.
             for (const token of tokens) {
                 if (!/^[A-Ha-h](?:isis|eses|is|es|#|b)?(?:.*)$/.test(token)) {
                     return [original];
