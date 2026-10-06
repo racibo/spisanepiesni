@@ -3486,16 +3486,20 @@ var qrcode = function() {
         function transposeChordStr(chordStr, steps) {
             const original = String(chordStr);
 
-            // Najważniejsze: fis, Cis, fis7, Cis7 itd. są zawsze jednym akordem.
-            const direct = transposeSingleChord(original, steps);
-            if (direct !== original || noteValues[original.charAt(0).toUpperCase() + original.slice(1)] !== undefined) {
-                return direct;
+            // Jeśli zapis zawiera kolejną wielką literę A-H, traktujemy go
+            // jako stary zapis kilku sklejonych akordów (np. GDA).
+            // Samo "fis", "Cis", "Fis7" itd. ma tylko jeden początek akordu
+            // i MUSI pozostać jednym akordem.
+            const compactMultiple = /^[A-H](?:isis|is|eses|es|s|##|#|bb|b)?[A-H]/.test(original);
+
+            if (compactMultiple) {
+                return splitCompactChordToken(original)
+                    .map(chord => transposeSingleChord(chord, steps))
+                    .join("");
             }
 
-            // Tylko stare sklejone zapisy, np. GDA.
-            return splitCompactChordToken(original)
-                .map(chord => transposeSingleChord(chord, steps))
-                .join("");
+            // Zwykły akord: fis, Cis, fis7, Cis7, Bm itd.
+            return transposeSingleChord(original, steps);
         }
 
         // ---- LOGIKA ROZMIARU TEKSTU ----
