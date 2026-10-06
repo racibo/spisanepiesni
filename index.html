@@ -359,7 +359,7 @@
         }
         .chord-gap {
             display: inline-block;
-            width: 2ch;
+            width: 0.75ch;
         }
         .lyric { 
             color: var(--text); 
@@ -3329,8 +3329,11 @@ var qrcode = function() {
                         );
                     }
                 } else if (index > 0) {
-                    // "Obok" zawsze zwarto: jeden odstęp między akordami.
-                    chordSpan.appendChild(document.createTextNode(" "));
+                    // W trybie "obok" pokazujemy jeden wizualny odstęp.
+                    // Nie używamy zwykłej spacji, bo white-space jest zwijane.
+                    const gap = document.createElement("span");
+                    gap.className = "chord-gap";
+                    chordSpan.appendChild(gap);
                 }
 
                 const chord = document.createElement("span");
