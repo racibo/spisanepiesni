@@ -3240,42 +3240,33 @@ var qrcode = function() {
         // Każdy kolejny "|" oznacza dodatkowy odstęp 2 znaków w trybie „akordy nad”.
         // Znaczniki pozycji nigdy nie trafiają do transpozycji.
         function parseChordLine(chords) {
-            // Sekcja akordów pochodzi z tekstu po pierwszym "|".
-            // W trybie "nad" zachowujemy odstępy wpisane w Warsztacie:
-            // - spacje po "|" przed pierwszym akordem,
-            // - spacje pomiędzy kolejnymi akordami.
-            // Sam "|" nie jest dodatkowym znakiem; powtórzone "|" zachowują
-            // starszą składnię zwiększania odstępu.
+            // W nowym formacie cały zapis po "|" jest jednym stringiem,
+            // np. " a       G    F". Spacje są informacją o pozycji akordów.
             if (typeof chords === "string") {
                 const result = [];
                 let token = "";
-                let gapBefore = 0;
-                let spaces = 0;
-                let bars = 0;
-
-                const startToken = () => {
-                    gapBefore = spaces + bars * 3;
-                    spaces = 0;
-                    bars = 0;
-                };
+                let gap = 0;
 
                 const pushToken = () => {
                     if (!token) return;
-                    result.push({ chord: token, gapBefore });
+                    result.push({ chord: token, gapBefore: gap });
                     token = "";
-                    gapBefore = 0;
+                    gap = 0;
                 };
 
                 for (const char of chords) {
                     if (char === "|") {
-                        pushToken();
-                        bars += 1;
-                        spaces = 0;
-                    } else if (/\s/.test(char)) {
-                        spaces += 1;
+                        // Separator starego formatu zwiększa odstęp.
+                        if (token) pushToken();
+                        gap += 3;
+                    } else if (/\\s/.test(char)) {
+                        gap += 1;
                     } else {
-                        if (!token) {
-                            startToken();
+                        // Każdy nowy znak po istniejącym odstępie zaczyna
+                        // kolejny akord. Dzięki temu "a       G    F"
+                        // staje się trzema akordami, a nie "aGF".
+                        if (token && gap > 0) {
+                            pushToken();
                         }
                         token += char;
                     }
@@ -3284,11 +3275,8 @@ var qrcode = function() {
                 return result;
             }
 
-            // Nowy format z Warsztatu jest obecnie zapisywany jako
-            // tablica zawierająca JEDEN string, np.
-            // ["a               G    F"].
-            // Nie wolno rozbijać go po białych znakach, bo właśnie te
-            // białe znaki określają pozycję akordów w trybie "nad".
+            // Nowy format z Warsztatu: jedna tablica z jednym stringiem.
+            // Nie rozbijamy jej po białych znakach.
             if (Array.isArray(chords) && chords.length === 1 && typeof chords[0] === "string") {
                 return parseChordLine(chords[0]);
             }
@@ -3299,19 +3287,23 @@ var qrcode = function() {
             let pendingGap = 0;
 
             parts.forEach(part => {
-                String(part).split(/(\||\s+)/g).forEach(piece => {
-                    const token = piece.trim();
-                    if (!token) return;
-                    if (token === "|") {
+                const str = String(part ?? "");
+                for (const piece of str.split(/(\\||\\s+)/g)) {
+                    if (!piece) continue;
+                    if (piece === "|") {
                         pendingGap += 3;
-                        return;
+                        continue;
+                    }
+                    if (/^\\s+$/.test(piece)) {
+                        pendingGap += piece.length;
+                        continue;
                     }
                     result.push({
-                        chord: token,
-                        gapBefore: result.length === 0 ? pendingGap : Math.max(1, pendingGap)
+                        chord: piece,
+                        gapBefore: pendingGap
                     });
                     pendingGap = 0;
-                });
+                }
             });
             return result;
         }
