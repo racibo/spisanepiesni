@@ -3240,86 +3240,69 @@ var qrcode = function() {
         // Każdy kolejny "|" oznacza dodatkowy odstęp 2 znaków w trybie „akordy nad”.
         // Znaczniki pozycji nigdy nie trafiają do transpozycji.
         function parseChordLine(chords) {
-            // Parser akordów zachowuje DOKŁADNĄ liczbę spacji z warsztatu.
-            // Przykład: "a               G    F" -> odstępy 15 i 4.
-            // Znaki "|" są starszym zapisem dodatkowego odstępu.
+            // Sekcja akordów pochodzi z tekstu po pierwszym "|".
+            // W trybie "nad" zachowujemy odstępy wpisane w Warsztacie:
+            // - spacje po "|" przed pierwszym akordem,
+            // - spacje pomiędzy kolejnymi akordami.
+            // Sam "|" nie jest dodatkowym znakiem; powtórzone "|" zachowują
+            // starszą składnię zwiększania odstępu.
             if (typeof chords === "string") {
                 const result = [];
                 let token = "";
-                let tokenGap = 0;
-                let pendingSpaces = 0;
-                let pendingBars = 0;
+                let gapBefore = 0;
+                let spaces = 0;
+                let bars = 0;
+
+                const startToken = () => {
+                    gapBefore = spaces + bars * 3;
+                    spaces = 0;
+                    bars = 0;
+                };
 
                 const pushToken = () => {
                     if (!token) return;
-                    result.push({
-                        chord: token,
-                        gapBefore: tokenGap,
-                        gapsBefore: pendingBars
-                    });
+                    result.push({ chord: token, gapBefore });
                     token = "";
-                    tokenGap = 0;
-                    pendingBars = 0;
+                    gapBefore = 0;
                 };
 
                 for (const char of chords) {
                     if (char === "|") {
-                        // Kończymy bieżący akord. Kolejny dostanie dodatkowy odstęp.
                         pushToken();
-                        pendingBars += 1;
-                        pendingSpaces = 0;
-                        continue;
+                        bars += 1;
+                        spaces = 0;
+                    } else if (/\s/.test(char)) {
+                        spaces += 1;
+                    } else {
+                        if (!token) {
+                            startToken();
+                        }
+                        token += char;
                     }
-
-                    if (/\s/.test(char)) {
-                        // Spacje pomiędzy akordami są informacją o pozycji
-                        // następnego akordu. Nie wolno ich dopisywać do poprzedniego.
-                        pendingSpaces += 1;
-                        continue;
-                    }
-
-                    if (token && pendingSpaces > 0) {
-                        // Zaczynamy następny akord. Zapamiętane spacje dotyczą
-                        // właśnie jego, a nie poprzedniego.
-                        pushToken();
-                        tokenGap = pendingSpaces + pendingBars * 3;
-                        pendingSpaces = 0;
-                        pendingBars = 0;
-                    } else if (!token) {
-                        tokenGap = pendingSpaces + pendingBars * 3;
-                        pendingSpaces = 0;
-                        pendingBars = 0;
-                    }
-
-                    token += char;
                 }
-
                 pushToken();
                 return result;
             }
 
-            // Obsługa starszego formatu tablicowego.
+            // Starszy format tablicowy.
             const parts = Array.isArray(chords) ? chords : [chords];
             const result = [];
-            let pendingGaps = 0;
+            let pendingGap = 0;
 
             parts.forEach(part => {
-                String(part)
-                    .split(/(\||\s+)/g)
-                    .forEach(piece => {
-                        const token = piece.trim();
-                        if (!token) return;
-                        if (token === "|") {
-                            if (result.length > 0) pendingGaps += 1;
-                            return;
-                        }
-                        result.push({
-                            chord: token,
-                            gapBefore: result.length === 0 ? 0 : 1 + pendingGaps * 3,
-                            gapsBefore: pendingGaps
-                        });
-                        pendingGaps = 0;
+                String(part).split(/(\||\s+)/g).forEach(piece => {
+                    const token = piece.trim();
+                    if (!token) return;
+                    if (token === "|") {
+                        pendingGap += 3;
+                        return;
+                    }
+                    result.push({
+                        chord: token,
+                        gapBefore: result.length === 0 ? pendingGap : Math.max(1, pendingGap)
                     });
+                    pendingGap = 0;
+                });
             });
             return result;
         }
@@ -3327,33 +3310,26 @@ var qrcode = function() {
         function renderChordLine(chords, chordSpan) {
             const parsed = parseChordLine(chords);
 
-            if (chordLayoutMode === "above") {
-                // W tym trybie składamy akordy jako zwykły tekst z dokładnie
-                // taką liczbą spacji, jaka została wpisana w warsztacie.
-                // Dzięki white-space: pre przeglądarka niczego nie kompresuje.
-                parsed.forEach((item, index) => {
-                    if (index > 0) {
+            parsed.forEach((item, index) => {
+                if (chordLayoutMode === "above") {
+                    // W "nad" odstęp jest dokładnie tym, który wynika z Warsztatu.
+                    // Dla pierwszego akordu zachowujemy również spacje po "|".
+                    if (item.gapBefore > 0) {
                         chordSpan.appendChild(
-                            document.createTextNode(" ".repeat(Math.max(1, item.gapBefore)))
+                            document.createTextNode(" ".repeat(item.gapBefore))
                         );
                     }
-                    const chord = document.createElement("span");
-                    chord.className = "chord-item";
-                    chord.textContent = transposeChordStr(item.chord, currentTransposition);
-                    chordSpan.appendChild(chord);
-                });
-            } else {
-                // „Akordy obok” zawsze są zwarte i ignorują odstępy z warsztatu.
-                parsed.forEach((item, index) => {
-                    if (index > 0) {
-                        chordSpan.appendChild(document.createTextNode(" "));
-                    }
-                    const chord = document.createElement("span");
-                    chord.className = "chord-item";
-                    chord.textContent = transposeChordStr(item.chord, currentTransposition);
-                    chordSpan.appendChild(chord);
-                });
-            }
+                } else if (index > 0) {
+                    // "Obok" zawsze zwarto: jeden odstęp między akordami.
+                    chordSpan.appendChild(document.createTextNode(" "));
+                }
+
+                const chord = document.createElement("span");
+                chord.className = "chord-item";
+                chord.textContent = transposeChordStr(item.chord, currentTransposition);
+                chordSpan.appendChild(chord);
+            });
+
             return parsed.length > 0;
         }
 
@@ -3465,16 +3441,19 @@ var qrcode = function() {
 
         function transposeSingleChord(chordStr, steps) {
             const original = String(chordStr);
-            const match = original.match(/^([A-Ha-h](?:isis|is|eses|es|s|##|#|bb|b)?)(.*)$/);
+
+            // Polski zapis nut: fis, cis, dis, gis, ais oraz wielkie Cis/Fis itd.
+            // jest jednym akordem. Cyfry i oznaczenia typu m, 7, maj7 zostają.
+            const match = original.match(/^([A-Ha-h](?:isis|eses|is|es|#|b)?)(.*)$/);
             if (!match) return original;
 
             let base = match[1];
             const rest = match[2];
 
             const isMinor = base.charAt(0) === base.charAt(0).toLowerCase();
-            base = base.charAt(0).toUpperCase() + base.slice(1);
+            const lookup = base.charAt(0).toUpperCase() + base.slice(1);
+            const val = noteValues[lookup];
 
-            const val = noteValues[base];
             if (val === undefined) return original;
 
             const newVal = ((val + steps) % 12 + 12) % 12;
@@ -3483,14 +3462,36 @@ var qrcode = function() {
             return (isMinor ? newBase.toLowerCase() : newBase) + rest;
         }
 
+        function splitCompactChordToken(chordStr) {
+            const original = String(chordStr);
+            const starts = [];
+
+            // Stary zapis kilku akordów bez separatorów, np. GDA.
+            // Nie rozbijamy "fis", "Cis", "Fis7" itd., bo "is"/"es" są
+            // częścią nazwy pierwszego akordu.
+            for (let i = 1; i < original.length; i++) {
+                if (/[A-H]/.test(original[i])) starts.push(i);
+            }
+
+            if (starts.length === 0) return [original];
+
+            const boundaries = [0, ...starts, original.length];
+            const tokens = boundaries.slice(0, -1).map((start, i) =>
+                original.slice(start, boundaries[i + 1])
+            );
+
+            return tokens.every(t => /^[A-Ha-h](?:isis|eses|is|es|#|b)?(?:.*)$/.test(t))
+                ? tokens
+                : [original];
+        }
+
         function transposeChordStr(chordStr, steps) {
             const original = String(chordStr);
 
-            // Jeśli zapis zawiera kolejną wielką literę A-H, traktujemy go
-            // jako stary zapis kilku sklejonych akordów (np. GDA).
-            // Samo "fis", "Cis", "Fis7" itd. ma tylko jeden początek akordu
-            // i MUSI pozostać jednym akordem.
-            const compactMultiple = /^[A-H](?:isis|is|eses|es|s|##|#|bb|b)?[A-H]/.test(original);
+            // "fis", "Cis", "fis7", "Cis7", "Bm" itd. są pojedynczymi akordami.
+            // Sklejone akordy rozpoznajemy tylko wtedy, gdy po nazwie pierwszego
+            // akordu występuje kolejna wielka litera A-H.
+            const compactMultiple = /^[A-H](?:isis|eses|is|es|#|b)?[A-H]/.test(original);
 
             if (compactMultiple) {
                 return splitCompactChordToken(original)
@@ -3498,7 +3499,6 @@ var qrcode = function() {
                     .join("");
             }
 
-            // Zwykły akord: fis, Cis, fis7, Cis7, Bm itd.
             return transposeSingleChord(original, steps);
         }
 
