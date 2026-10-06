@@ -3400,16 +3400,44 @@ var qrcode = function() {
         // ---- LOGIKA TRANSPOZYCJI AKORDÓW ----
 
         function transposeSingleChord(chordStr, steps) {
-            const original = String(chordStr);
+            const original = String(chordStr).trim();
+            if (!original) return original;
 
-            // Jeden akord: A, a, G, fis, Cis, Bm, G7, Fismaj7 itd.
-            // Nazwa dźwięku jest oddzielona od reszty akordu.
+            // Obsługa jednego akordu, także z przewrotem, np. C/G, D/Fis, a/H.
+            // Root i bas są transponowane niezależnie.
+            const transposeRoot = (root) => {
+                const match = root.match(/^([A-Ha-h](?:isis|eses|is|es|#|b)?)$/);
+                if (!match) return root;
+
+                const base = match[1];
+                const isMinor = /^[a-h]/.test(base);
+                const normalizedBase = base.charAt(0).toUpperCase() + base.slice(1);
+                const value = noteValues[normalizedBase];
+
+                if (value === undefined) return root;
+
+                const newValue = ((value + steps) % 12 + 12) % 12;
+                const newBase = polishNames[newValue];
+                return isMinor ? newBase.toLowerCase() : newBase;
+            };
+
+            // Akord z basem: C/G, a/E, Fis/Cis itd.
+            if (original.includes("/")) {
+                const slash = original.indexOf("/");
+                const main = original.slice(0, slash);
+                const bass = original.slice(slash + 1);
+                if (/^[A-Ha-h](?:isis|eses|is|es|#|b)?$/.test(main) &&
+                    /^[A-Ha-h](?:isis|eses|is|es|#|b)?$/.test(bass)) {
+                    return transposeRoot(main) + "/" + transposeRoot(bass);
+                }
+            }
+
+            // Zwykły akord z dodatkiem: A, a, fis, Cis, H7, Bm, Fismaj7...
             const match = original.match(/^([A-Ha-h](?:isis|eses|is|es|#|b)?)(.*)$/);
             if (!match) return original;
 
             const base = match[1];
             const rest = match[2];
-
             const isMinor = /^[a-h]/.test(base);
             const normalizedBase = base.charAt(0).toUpperCase() + base.slice(1);
             const value = noteValues[normalizedBase];
@@ -3423,61 +3451,49 @@ var qrcode = function() {
         }
 
         function splitCompactChordToken(chordStr) {
-            const original = String(chordStr);
+            const original = String(chordStr).trim();
+            if (!original) return [];
 
-            // Najpierw sprawdzamy, czy cały zapis jest jednym poprawnym akordem.
-            // Dzięki temu "fis", "Cis", "Fis7", "Bm" itd. nie są rozbijane.
-            const single = original.match(/^([A-Ha-h](?:isis|eses|is|es|#|b)?)(.*)$/);
-            if (single) {
-                const base = single[1].charAt(0).toUpperCase() + single[1].slice(1);
-                if (noteValues[base] !== undefined && !/[A-H]/.test(single[2])) {
-                    return [original];
-                }
+            // Najważniejsze: jeżeli zapis zawiera spacje, zawsze traktujemy je
+            // jako separatory akordów. Dzięki temu stare i nowe dane działają
+            // identycznie: "a G E F F" -> a, G, E, F, F.
+            if (/\\s/.test(original)) {
+                return original.split(/\\s+/).filter(Boolean);
             }
 
-            // Stary zapis kilku akordów bez separatorów, np. GDA.
+            // Jeden akord pozostaje jednym akordem.
+            if (/^[A-Ha-h](?:isis|eses|is|es|#|b)?(?:.*)$/.test(original)) {
+                return [original];
+            }
+
+            // Stary zapis kilku akordów bez spacji, np. GDA.
             const tokens = [];
             let start = 0;
 
             for (let i = 1; i < original.length; i++) {
                 if (/[A-H]/.test(original[i])) {
-                    const candidate = original.slice(start, i);
-                    if (!/^[A-Ha-h](?:isis|eses|is|es|#|b)?(?:.*)$/.test(candidate)) {
-                        return [original];
-                    }
-                    tokens.push(candidate);
+                    tokens.push(original.slice(start, i));
                     start = i;
                 }
             }
-
             tokens.push(original.slice(start));
 
             if (tokens.length < 2) return [original];
 
             for (const token of tokens) {
-                const m = token.match(/^([A-Ha-h](?:isis|eses|is|es|#|b)?)(.*)$/);
-                if (!m) return [original];
-
-                const base = m[1].charAt(0).toUpperCase() + m[1].slice(1);
-                if (noteValues[base] === undefined) return [original];
+                if (!/^[A-Ha-h](?:isis|eses|is|es|#|b)?(?:.*)$/.test(token)) {
+                    return [original];
+                }
             }
 
             return tokens;
         }
 
         function transposeChordStr(chordStr, steps) {
-            const original = String(chordStr);
+            const compact = splitCompactChordToken(chordStr);
 
-            // Parser linii już rozdziela akordy zapisane ze spacjami.
-            // Tutaj transponujemy więc normalnie pojedynczy akord.
-            // Obsługujemy dodatkowo stary zapis sklejony, np. GDA.
-            const compact = splitCompactChordToken(original);
-
-            if (compact.length > 1) {
-                return compact.map(chord => transposeSingleChord(chord, steps)).join("");
-            }
-
-            return transposeSingleChord(original, steps);
+            if (compact.length === 0) return "";
+            return compact.map(chord => transposeSingleChord(chord, steps)).join(" ");
         }
 
         // ---- LOGIKA ROZMIARU TEKSTU ----
