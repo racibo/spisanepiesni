@@ -350,7 +350,7 @@
             font-size: var(--chord-font-size); 
             font-weight: 800; 
             line-height: 1.15;
-            white-space: nowrap;
+            white-space: pre;
             flex: 0 0 auto;
             order: 2;
         }
@@ -3319,11 +3319,13 @@ var qrcode = function() {
                     chordSpan.appendChild(chord);
                 });
             } else {
-                // W trybie „akordy obok” duże odstępy są redukowane do maks. 3 spacji.
+                // W trybie „akordy obok” również zachowujemy rzeczywiste
+                // odstępy zapisane w songs.json. CSS white-space: pre
+                // sprawia, że przeglądarka ich nie składa.
                 parsed.forEach((item, index) => {
                     if (index > 0) {
                         chordSpan.appendChild(
-                            document.createTextNode(" ".repeat(Math.min(3, Math.max(1, item.gapBefore))))
+                            document.createTextNode(" ".repeat(Math.max(1, item.gapBefore)))
                         );
                     }
                     const chord = document.createElement("span");
