@@ -381,7 +381,17 @@
         }
         body.chords-above .chords {
             order: 0;
+            /*
+             * W trybie „akordy nad” spacje z Warsztatu są pozycjami
+             * względem tekstu poniżej. Dlatego używamy tej samej rodziny
+             * i rozmiaru fontu co tekst. Wcześniej .chords używał
+             * monospace + większego fontu, więc jedna spacja była znacznie
+             * szersza i akordy przesuwały się względem tekstu.
+             */
             white-space: pre;
+            font-family: inherit;
+            font-size: var(--song-font-size);
+            font-weight: 800;
             flex: 1 1 auto;
             max-width: 100%;
             overflow-x: auto;
@@ -3313,16 +3323,18 @@ var qrcode = function() {
 
             parsed.forEach((item, index) => {
                 if (chordLayoutMode === "above") {
-                    // W "nad" odstęp jest dokładnie tym, który wynika z Warsztatu.
-                    // Dla pierwszego akordu zachowujemy również spacje po "|".
+                    // W „akordy nad” każda spacja z Warsztatu jest
+                    // zachowana 1:1. Ponieważ .chords ma dokładnie ten sam
+                    // font i rozmiar co .lyric, szerokość spacji odpowiada
+                    // szerokości spacji w tekście poniżej.
                     if (item.gapBefore > 0) {
                         chordSpan.appendChild(
                             document.createTextNode(" ".repeat(item.gapBefore))
                         );
                     }
                 } else if (index > 0) {
-                    // W trybie "obok" pokazujemy jeden wizualny odstęp.
-                    // Nie używamy zwykłej spacji, bo white-space jest zwijane.
+                    // W trybie „obok” duże odstępy z Warsztatu są celowo
+                    // redukowane do jednego wizualnego odstępu.
                     const gap = document.createElement("span");
                     gap.className = "chord-gap";
                     chordSpan.appendChild(gap);
