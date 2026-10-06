@@ -350,7 +350,7 @@
             font-size: var(--chord-font-size); 
             font-weight: 800; 
             line-height: 1.15;
-            white-space: pre;
+            white-space: nowrap;
             flex: 0 0 auto;
             order: 2;
         }
@@ -3240,8 +3240,10 @@ var qrcode = function() {
         // Każdy kolejny "|" oznacza dodatkowy odstęp 2 znaków w trybie „akordy nad”.
         // Znaczniki pozycji nigdy nie trafiają do transpozycji.
         function parseChordLine(chords) {
-            // Nowy zapis zachowuje odstępy, np. "A       G   D".
-            // Stary zapis z dodatkowymi "|" pozostaje obsługiwany.
+            // Nowy zapis zachowuje rzeczywiste odstępy, np.:
+            // "a               G    F"
+            // Odstęp między akordami jest informacją o ich położeniu
+            // w trybie „akordy nad”.
             if (typeof chords === "string") {
                 const result = [];
                 let token = "";
@@ -3250,10 +3252,17 @@ var qrcode = function() {
 
                 const pushToken = () => {
                     if (!token) return;
+
                     const gapBefore = result.length === 0
                         ? 0
-                        : spaces + legacyGaps * 3 + 1;
-                    result.push({ chord: token, gapBefore, gapsBefore: legacyGaps });
+                        : spaces + legacyGaps * 3;
+
+                    result.push({
+                        chord: token,
+                        gapBefore,
+                        gapsBefore: legacyGaps
+                    });
+
                     token = "";
                     spaces = 0;
                     legacyGaps = 0;
@@ -3261,16 +3270,26 @@ var qrcode = function() {
 
                 for (const char of chords) {
                     if (char === "|") {
+                        // | jest starszym sposobem zwiększania odstępu.
+                        // Nie tracimy go i nie traktujemy go jako części akordu.
                         pushToken();
                         legacyGaps += 1;
                         spaces = 0;
-                    } else if (/\s/.test(char)) {
-                        if (token) pushToken();
+                    } else if (/\\s/.test(char)) {
+                        // WAŻNE: nie kończymy tutaj akordu.
+                        // Zbieramy wszystkie spacje, żeby następny akord
+                        // dostał dokładnie taki odstęp, jaki zapisano w Sheets.
                         spaces += 1;
                     } else {
+                        if (token && spaces > 0) {
+                            // Mamy kolejny akord. Najpierw zapisujemy poprzedni
+                            // z informacją o odstępie przed bieżącym akordem.
+                            pushToken();
+                        }
                         token += char;
                     }
                 }
+
                 pushToken();
                 return result;
             }
@@ -3282,7 +3301,7 @@ var qrcode = function() {
 
             parts.forEach(part => {
                 String(part)
-                    .split(/(\||\s+)/g)
+                    .split(/(\\||\\s+)/g)
                     .forEach(piece => {
                         const token = piece.trim();
                         if (!token) return;
@@ -3319,14 +3338,11 @@ var qrcode = function() {
                     chordSpan.appendChild(chord);
                 });
             } else {
-                // W trybie „akordy obok” również zachowujemy rzeczywiste
-                // odstępy zapisane w songs.json. CSS white-space: pre
-                // sprawia, że przeglądarka ich nie składa.
+                // „Akordy obok” mają być zwarte niezależnie od odstępów
+                // ustawionych dla trybu „akordy nad”.
                 parsed.forEach((item, index) => {
                     if (index > 0) {
-                        chordSpan.appendChild(
-                            document.createTextNode(" ".repeat(Math.max(1, item.gapBefore)))
-                        );
+                        chordSpan.appendChild(document.createTextNode(" "));
                     }
                     const chord = document.createElement("span");
                     chord.className = "chord-item";
