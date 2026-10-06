@@ -3399,108 +3399,82 @@ var qrcode = function() {
 
         // ---- LOGIKA TRANSPOZYCJI AKORDÓW ----
 
-        function splitCompactChordToken(chordStr) {
-            // Najpierw próbujemy potraktować cały zapis jako JEDEN akord.
-            // To jest kluczowe dla polskich nazw:
-            // fis, Cis, Fis7, Cis7, Bm itd. nie mogą być rozbijane na litery.
-            const whole = String(chordStr);
-            if (/^[A-Ha-h](?:isis|is|eses|es|s|##|#|bb|b)?(?:.*)?$/.test(whole)) {
-                const match = whole.match(/^([A-HHa-h](?:isis|is|eses|es|s|##|#|bb|b)?)(.*)$/);
-                if (match) {
-                    const base = match[1].charAt(0).toUpperCase() + match[1].slice(1);
-                    if (noteValues[base] !== undefined) {
-                        // Jeżeli poza podstawą nie ma kolejnej wielkiej litery A-H,
-                        // jest to zwykły pojedynczy akord.
-                        if (!/[A-H]/.test(match[2])) {
-                            return [whole];
-                        }
-                    }
-                }
-            }
-
-            // Starszy zapis bez separatorów, np. GDA.
-            // Rozdzielamy wyłącznie po kolejnych wielkich literach A-H.
-            const starts = [];
-            for (let i = 1; i < whole.length; i++) {
-                if (/[A-H]/.test(whole[i])) starts.push(i);
-            }
-
-            if (starts.length === 0) return [whole];
-
-            const boundaries = [0, ...starts, whole.length];
-            const tokens = [];
-
-            for (let i = 0; i < boundaries.length - 1; i++) {
-                const token = whole.slice(boundaries[i], boundaries[i + 1]);
-                const match = token.match(/^([A-Ha-h](?:isis|is|eses|es|s|##|#|bb|b)?)(.*)$/);
-                if (!match) return [whole];
-
-                const base = match[1].charAt(0).toUpperCase() + match[1].slice(1);
-                if (noteValues[base] === undefined) return [whole];
-                tokens.push(token);
-            }
-
-            return tokens.length > 1 ? tokens : [whole];
-        }
-
         function transposeSingleChord(chordStr, steps) {
             const original = String(chordStr);
 
-            // Polski zapis nut: fis, cis, dis, gis, ais oraz wielkie Cis/Fis itd.
-            // jest jednym akordem. Cyfry i oznaczenia typu m, 7, maj7 zostają.
+            // Jeden akord: A, a, G, fis, Cis, Bm, G7, Fismaj7 itd.
+            // Nazwa dźwięku jest oddzielona od reszty akordu.
             const match = original.match(/^([A-Ha-h](?:isis|eses|is|es|#|b)?)(.*)$/);
             if (!match) return original;
 
-            let base = match[1];
+            const base = match[1];
             const rest = match[2];
 
-            const isMinor = base.charAt(0) === base.charAt(0).toLowerCase();
-            const lookup = base.charAt(0).toUpperCase() + base.slice(1);
-            const val = noteValues[lookup];
+            const isMinor = /^[a-h]/.test(base);
+            const normalizedBase = base.charAt(0).toUpperCase() + base.slice(1);
+            const value = noteValues[normalizedBase];
 
-            if (val === undefined) return original;
+            if (value === undefined) return original;
 
-            const newVal = ((val + steps) % 12 + 12) % 12;
-            const newBase = polishNames[newVal];
+            const newValue = ((value + steps) % 12 + 12) % 12;
+            const newBase = polishNames[newValue];
 
             return (isMinor ? newBase.toLowerCase() : newBase) + rest;
         }
 
         function splitCompactChordToken(chordStr) {
             const original = String(chordStr);
-            const starts = [];
 
-            // Stary zapis kilku akordów bez separatorów, np. GDA.
-            // Nie rozbijamy "fis", "Cis", "Fis7" itd., bo "is"/"es" są
-            // częścią nazwy pierwszego akordu.
-            for (let i = 1; i < original.length; i++) {
-                if (/[A-H]/.test(original[i])) starts.push(i);
+            // Najpierw sprawdzamy, czy cały zapis jest jednym poprawnym akordem.
+            // Dzięki temu "fis", "Cis", "Fis7", "Bm" itd. nie są rozbijane.
+            const single = original.match(/^([A-Ha-h](?:isis|eses|is|es|#|b)?)(.*)$/);
+            if (single) {
+                const base = single[1].charAt(0).toUpperCase() + single[1].slice(1);
+                if (noteValues[base] !== undefined && !/[A-H]/.test(single[2])) {
+                    return [original];
+                }
             }
 
-            if (starts.length === 0) return [original];
+            // Stary zapis kilku akordów bez separatorów, np. GDA.
+            const tokens = [];
+            let start = 0;
 
-            const boundaries = [0, ...starts, original.length];
-            const tokens = boundaries.slice(0, -1).map((start, i) =>
-                original.slice(start, boundaries[i + 1])
-            );
+            for (let i = 1; i < original.length; i++) {
+                if (/[A-H]/.test(original[i])) {
+                    const candidate = original.slice(start, i);
+                    if (!/^[A-Ha-h](?:isis|eses|is|es|#|b)?(?:.*)$/.test(candidate)) {
+                        return [original];
+                    }
+                    tokens.push(candidate);
+                    start = i;
+                }
+            }
 
-            return tokens.every(t => /^[A-Ha-h](?:isis|eses|is|es|#|b)?(?:.*)$/.test(t))
-                ? tokens
-                : [original];
+            tokens.push(original.slice(start));
+
+            if (tokens.length < 2) return [original];
+
+            for (const token of tokens) {
+                const m = token.match(/^([A-Ha-h](?:isis|eses|is|es|#|b)?)(.*)$/);
+                if (!m) return [original];
+
+                const base = m[1].charAt(0).toUpperCase() + m[1].slice(1);
+                if (noteValues[base] === undefined) return [original];
+            }
+
+            return tokens;
         }
 
         function transposeChordStr(chordStr, steps) {
             const original = String(chordStr);
 
-            // "fis", "Cis", "fis7", "Cis7", "Bm" itd. są pojedynczymi akordami.
-            // Sklejone akordy rozpoznajemy tylko wtedy, gdy po nazwie pierwszego
-            // akordu występuje kolejna wielka litera A-H.
-            const compactMultiple = /^[A-H](?:isis|eses|is|es|#|b)?[A-H]/.test(original);
+            // Parser linii już rozdziela akordy zapisane ze spacjami.
+            // Tutaj transponujemy więc normalnie pojedynczy akord.
+            // Obsługujemy dodatkowo stary zapis sklejony, np. GDA.
+            const compact = splitCompactChordToken(original);
 
-            if (compactMultiple) {
-                return splitCompactChordToken(original)
-                    .map(chord => transposeSingleChord(chord, steps))
-                    .join("");
+            if (compact.length > 1) {
+                return compact.map(chord => transposeSingleChord(chord, steps)).join("");
             }
 
             return transposeSingleChord(original, steps);
