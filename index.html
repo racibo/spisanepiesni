@@ -3400,13 +3400,11 @@ var qrcode = function() {
         // ---- LOGIKA TRANSPOZYCJI AKORDÓW ----
 
         function transposeSingleChord(chordStr, steps) {
-            const original = String(chordStr).trim();
+            const original = String(chordStr ?? "").trim();
             if (!original) return original;
 
-            // Obsługa jednego akordu, także z przewrotem, np. C/G, D/Fis, a/H.
-            // Root i bas są transponowane niezależnie.
             const transposeRoot = (root) => {
-                const match = root.match(/^([A-Ha-h](?:isis|eses|is|es|#|b)?)$/);
+                const match = String(root).match(/^([A-Ha-h](?:isis|eses|is|es|#|b)?)$/);
                 if (!match) return root;
 
                 const base = match[1];
@@ -3421,18 +3419,19 @@ var qrcode = function() {
                 return isMinor ? newBase.toLowerCase() : newBase;
             };
 
-            // Akord z basem: C/G, a/E, Fis/Cis itd.
-            if (original.includes("/")) {
-                const slash = original.indexOf("/");
-                const main = original.slice(0, slash);
-                const bass = original.slice(slash + 1);
-                if (/^[A-Ha-h](?:isis|eses|is|es|#|b)?$/.test(main) &&
-                    /^[A-Ha-h](?:isis|eses|is|es|#|b)?$/.test(bass)) {
-                    return transposeRoot(main) + "/" + transposeRoot(bass);
-                }
+            // Przewroty, np. C/G, a/E, Fis/Cis.
+            // Transponujemy również bas.
+            const slashMatch = original.match(
+                /^([A-Ha-h](?:isis|eses|is|es|#|b)?)([^/]*)\/([A-Ha-h](?:isis|eses|is|es|#|b)?)$/
+            );
+            if (slashMatch) {
+                const main = transposeRoot(slashMatch[1]) + slashMatch[2];
+                const bass = transposeRoot(slashMatch[3]);
+                return main + "/" + bass;
             }
 
-            // Zwykły akord z dodatkiem: A, a, fis, Cis, H7, Bm, Fismaj7...
+            // Zwykły akord z dodatkiem: A, a, fis, Cis, H7, Bm,
+            // Fismaj7, Cadd9 itd.
             const match = original.match(/^([A-Ha-h](?:isis|eses|is|es|#|b)?)(.*)$/);
             if (!match) return original;
 
@@ -3450,30 +3449,32 @@ var qrcode = function() {
             return (isMinor ? newBase.toLowerCase() : newBase) + rest;
         }
 
+        function isChordToken(token) {
+            return /^[A-Ha-h](?:isis|eses|is|es|#|b)?(?:.*)$/.test(token);
+        }
+
         function splitCompactChordToken(chordStr) {
-            const original = String(chordStr).trim();
+            const original = String(chordStr ?? "").trim();
             if (!original) return [];
 
-            // Spacje są już jednoznacznym separatorem akordów.
-            if (/\\s/.test(original)) {
-                return original.split(/\\s+/).filter(Boolean);
+            // Spacje są pewnym separatorem akordów.
+            if (/\s/.test(original)) {
+                return original.split(/\s+/).filter(Boolean);
             }
 
-            // Akord z basem, np. C/G, pozostaje jednym akordem.
-            if (/^[A-Ha-h](?:isis|eses|is|es|#|b)?(?:.*)\\/[A-H-Ha-h](?:isis|eses|is|es|#|b)?$/.test(original)) {
+            // Przewrót pozostaje jednym akordem, np. C/G, Fis/Cis, a/H.
+            if (/^[A-Ha-h](?:isis|eses|is|es|#|b)?[^/]*\/[A-Ha-h](?:isis|eses|is|es|#|b)?$/.test(original)) {
                 return [original];
             }
 
-            // Jeżeli nie ma spacji, rozdzielamy sklejone akordy po kolejnych
-            // wielkich literach A-H:
-            //   GDA   -> G, D, A
-            //   aGEF  -> a, G, E, F
-            //   FisG  -> Fis, G
-            //   CisA7 -> Cis, A7
+            // Sklejone akordy:
+            // GDA -> G D A
+            // aGEF -> a G E F
+            // FisG -> Fis G
+            // CisA7 -> Cis A7
+            // G7Am -> G7 Am
             //
-            // Końcówki akordów (m, 7, maj7, sus4, add9, is, es itd.)
-            // nie zawierają kolejnej wielkiej litery A-H, więc nie są
-            // przypadkowo rozcinane.
+            // Rozcinamy tylko przed wielką literą A-H.
             const tokens = [];
             let current = "";
 
@@ -3490,24 +3491,27 @@ var qrcode = function() {
 
             if (current) tokens.push(current);
 
-            if (tokens.length < 2) return [original];
-
-            // Rozdzielenie stosujemy tylko wtedy, gdy każdy fragment
-            // rzeczywiście wygląda jak akord.
-            for (const token of tokens) {
-                if (!/^[A-Ha-h](?:isis|eses|is|es|#|b)?(?:.*)$/.test(token)) {
-                    return [original];
-                }
+            if (tokens.length < 2 || !tokens.every(isChordToken)) {
+                return [original];
             }
 
             return tokens;
         }
 
         function transposeChordStr(chordStr, steps) {
-            const compact = splitCompactChordToken(chordStr);
+            const tokens = splitCompactChordToken(chordStr);
+            if (!tokens.length) return "";
 
-            if (compact.length === 0) return "";
-            return compact.map(chord => transposeSingleChord(chord, steps)).join(" ");
+            // Każdy akord transponujemy niezależnie. Nietypowy/błędny
+            // pojedynczy zapis nie może przerwać transpozycji całej linii.
+            return tokens.map(token => {
+                try {
+                    return transposeSingleChord(token, steps);
+                } catch (error) {
+                    console.warn("Nie udało się transponować akordu:", token, error);
+                    return token;
+                }
+            }).join(" ");
         }
 
         // ---- LOGIKA ROZMIARU TEKSTU ----
